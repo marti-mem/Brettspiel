@@ -1,0 +1,26 @@
+{
+  "name": "brettspiel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node src/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marti-mem/Brettspiel.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marti-mem/Brettspiel/issues"
+  },
+  "homepage": "https://github.com/marti-mem/Brettspiel#readme",
+  "dependencies": {
+    "@fontsource/fredoka": "^5.3.0",
+    "@fontsource/nunito": "^5.3.0",
+    "@twemoji/svg": "^15.0.0"
+  }
+}
