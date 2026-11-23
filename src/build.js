@@ -115,60 +115,81 @@ function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) - 1) / 2
 function planInhalt() {
   const { ring, speichen } = planGeometrie();
   let s = '';
-  // Hintergrund
+  // Hintergrund: verschneite Winterlandschaft
   s += `<defs>
-    <radialGradient id="wiese" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#dff0c4"/><stop offset="1" stop-color="#bfe09a"/></radialGradient>
+    <radialGradient id="schnee" cx="50%" cy="50%" r="72%"><stop offset="0" stop-color="#f7fbff"/><stop offset="1" stop-color="#cfe3f3"/></radialGradient>
   </defs>`;
-  s += `<rect x="0" y="0" width="${B}" height="${B}" fill="url(#wiese)"/>`;
-  const r = rng(7);
-  for (let i = 0; i < 700; i++) {
-    const x = r() * B, y = r() * B;
-    s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} l0.6 -2.2 M${(x + 1).toFixed(1)} ${y.toFixed(1)} l-0.4 -1.8" stroke="#8fc46a" stroke-width="0.45" stroke-linecap="round" opacity="0.6"/>`;
-  }
-  s += `<rect x="3" y="3" width="${B - 6}" height="${B - 6}" rx="10" fill="none" stroke="#6a9f45" stroke-width="2.5"/>`;
+  s += `<rect x="0" y="0" width="${B}" height="${B}" fill="url(#schnee)"/>`;
+  const r = rng(11);
+  const flocke = (x, y, g, op) => {
+    let p = '';
+    for (let k = 0; k < 3; k++) {
+      const a = (k * Math.PI) / 3, dx = Math.cos(a) * g, dy = Math.sin(a) * g;
+      p += `M${(x - dx).toFixed(1)} ${(y - dy).toFixed(1)} L${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)} `;
+    }
+    return `<path d="${p}" stroke="#9cc3e2" stroke-width="${(g / 6).toFixed(2)}" stroke-linecap="round" opacity="${op}"/>`;
+  };
+  for (let i = 0; i < 260; i++) s += flocke(r() * B, r() * B, 1 + r() * 2.6, (0.35 + r() * 0.45).toFixed(2));
+  s += `<rect x="3" y="3" width="${B - 6}" height="${B - 6}" rx="10" fill="none" stroke="#b71c1c" stroke-width="3.2"/>`;
+  s += `<rect x="6.5" y="6.5" width="${B - 13}" height="${B - 13}" rx="8" fill="none" stroke="#e6a100" stroke-width="0.8" stroke-dasharray="3 2"/>`;
 
-  // Wege
+  // Wege (verschneiter Pfad)
   const ringPfad = 'M' + ring.map(f => `${f.x} ${f.y}`).join(' L') + ' Z';
   const speichenPfad = speichen.map(sp => `M${sp.von.x} ${sp.von.y} L${C.x} ${C.y}`).join(' ');
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#b08a57" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>`;
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#ead2a3" stroke-width="19" stroke-linejoin="round" stroke-linecap="round"/>`;
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#dcc08a" stroke-width="0.6" stroke-dasharray="1.5 3" stroke-linejoin="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#8fb0c9" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#ffffff" stroke-width="19" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#c9dcec" stroke-width="0.7" stroke-dasharray="1.5 3" stroke-linejoin="round"/>`;
 
-  // Viertel-Deko: Titel & Legende (je zweimal, gedreht, damit man von beiden Seiten lesen kann)
-  const titelBlock = (cx, cy, rot) => `<g transform="rotate(${rot} ${cx} ${cy})">
-    <rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="14" fill="#ffffff" opacity="0.55"/>
-    ${emoSvg('🦋', cx - 42, cy - 36, 12)}${emoSvg('🐞', cx + 44, cy + 36, 9)}${emoSvg('🌼', cx + 42, cy - 38, 10)}${emoSvg('🍄', cx - 44, cy + 38, 10)}
-    <text x="${cx}" y="${cy - 17}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="17" fill="#d84315">Jakobs</text>
-    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="15" fill="#6a1b9a">große</text>
-    <text x="${cx}" y="${cy + 21}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="15.5" fill="#1565c0">Schatzsuche</text>
-    ${emoSvg('🔍', cx, cy + 36, 11)}
+  const kasten = (cx, cy) => `<rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="14" fill="#ffffff" opacity="0.75" stroke="#c62828" stroke-width="0.6"/>`;
+  // Titel (zweimal, gedreht, damit man von beiden Seiten lesen kann)
+  const titelBlock = (cx, cy, rot) => `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}
+    ${emoSvg('🎄', cx - 42, cy - 35, 13)}${emoSvg('⭐', cx + 43, cy - 37, 9)}${emoSvg('🎅', cx - 43, cy + 36, 11)}${emoSvg('❄️', cx + 44, cy + 37, 9)}
+    <text x="${cx}" y="${cy - 17}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="17" fill="#c62828">${esc(D.titelZeilen[0])}</text>
+    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="14.5" fill="#1b5e20">${esc(D.titelZeilen[1])}</text>
+    <text x="${cx}" y="${cy + 20}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="14.5" fill="#b8860b">${esc(D.titelZeilen[2])}</text>
+    ${emoSvg('✨', cx, cy + 36, 10)}
   </g>`;
+  // Adventskalender (für die Gemeinsam-Variante)
+  const kalender = (cx, cy) => {
+    let g = kasten(cx, cy);
+    g += `<text x="${cx}" y="${cy - 36}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="7.5" fill="#c62828">Adventskalender</text>`;
+    const farben = ['#c62828', '#2e7d32', '#e6a100'];
+    const reihen = [[7, 15, 3, 21, 11, 18], [24, 1, 9, 13, 5, 20], [12, 17, 22, 2, 16, 8], [4, 19, 10, 6, 23, 14]];
+    reihen.forEach((reihe, ri) => reihe.forEach((n, ci) => {
+      const x = cx - 48 + ci * 16, y = cy - 30 + ri * 15;
+      const f = n === 24 ? '#b71c1c' : farben[(ri + ci) % 3];
+      g += `<rect x="${x + 0.6}" y="${y + 0.6}" width="14.8" height="13.8" rx="2.4" fill="${f}" stroke="${n === 24 ? '#ffd54f' : '#fff'}" stroke-width="${n === 24 ? 1.2 : 0.7}"/>`;
+      g += `<text x="${x + 8}" y="${y + 10}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="${n === 24 ? 7.5 : 6.5}" fill="#fff">${n}</text>`;
+    }));
+    g += `<text x="${cx}" y="${cy + 43}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="3.6" fill="#555">für das Spiel „Gemeinsam bis Heiligabend“</text>`;
+    return g;
+  };
   const legende = (cx, cy, rot) => {
     const zeilen = [
-      { icon: `<circle cx="0" cy="0" r="7" fill="#ffd54f" stroke="#b08a57" stroke-width="0.8"/>${emoSvg('⭐', 0, 0, 9)}`, t1: 'Sternfeld', t2: 'Jakob-Karte ziehen' },
-      { icon: `<circle cx="0" cy="0" r="7" fill="#ef6c00"/><circle cx="0" cy="0" r="4.6" fill="#fff"/>${emoSvg('⚽', 0, 0, 7)}`, t1: 'Ort', t2: 'Gegenstand einsammeln' },
-      { icon: `<circle cx="0" cy="0" r="7" fill="#ffe0b2" stroke="#e65100" stroke-width="0.8"/>${emoSvg('🏠', 0, 0, 9)}`, t1: 'Jakobs Zimmer', t2: 'Start und Ziel' },
+      { icon: `<circle cx="0" cy="0" r="7" fill="#ffd54f" stroke="#8fb0c9" stroke-width="0.8"/>${emoSvg('⭐', 0, 0, 9)}`, t1: 'Sternfeld', t2: D.kartenName + ' ziehen' },
+      { icon: `<circle cx="0" cy="0" r="7" fill="#6a1b9a"/><circle cx="0" cy="0" r="4.6" fill="#fff"/>${emoSvg('🎁', 0, 0, 7)}`, t1: 'Ort', t2: 'Gegenstand einsammeln' },
+      { icon: `<circle cx="0" cy="0" r="7" fill="#fff3e0" stroke="#c62828" stroke-width="0.8"/>${emoSvg(D.zentrum.emoji, 0, 0, 9)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
     ];
-    let g = `<g transform="rotate(${rot} ${cx} ${cy})"><rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="14" fill="#ffffff" opacity="0.55"/>`;
-    g += `<text x="${cx}" y="${cy - 33}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="7.5" fill="#33691e">So geht's</text>`;
+    let g = `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}`;
+    g += `<text x="${cx}" y="${cy - 33}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="7.5" fill="#1b5e20">So geht's</text>`;
     zeilen.forEach((z, i) => {
-      const y = cy - 15 + i * 21, x = cx - 40;
+      const y = cy - 15 + i * 21, x = cx - 44;
       g += `<g transform="translate(${x} ${y})">${z.icon}</g>`;
-      g += `<text x="${x + 12}" y="${y - 1}" font-family="Fredoka" font-weight="600" font-size="5.6" fill="#333">${esc(z.t1)}</text>`;
+      g += `<text x="${x + 12}" y="${y - 1}" font-family="Fredoka" font-weight="600" font-size="5.4" fill="#333">${esc(z.t1)}</text>`;
       g += `<text x="${x + 12}" y="${y + 5.5}" font-family="Nunito" font-weight="700" font-size="4.6" fill="#555">${esc(z.t2)}</text>`;
     });
     return g + '</g>';
   };
-  s += titelBlock(118, 118, 0) + titelBlock(282, 282, 180) + legende(282, 118, 0) + legende(118, 282, 180);
+  s += titelBlock(118, 118, 0) + titelBlock(282, 282, 180) + kalender(282, 118) + legende(118, 282, 180);
 
   // Felder
   const feld = f => {
     if (f.typ === 'stern') {
-      return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#ffd54f" stroke="#8a6a3d" stroke-width="1"/>` +
+      return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#ffd54f" stroke="#b8860b" stroke-width="1"/>` +
         `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2}" fill="none" stroke="#fff3c4" stroke-width="0.8"/>` + emoSvg('⭐', f.x, f.y, 16);
     }
-    return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#fffaf0" stroke="#8a6a3d" stroke-width="1"/>` +
-      `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2}" fill="none" stroke="#efe2c6" stroke-width="0.8"/>`;
+    return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#ffffff" stroke="#6f97b8" stroke-width="1"/>` +
+      `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2}" fill="none" stroke="#dce9f4" stroke-width="0.8"/>`;
   };
   ring.filter(f => f.typ !== 'ort').forEach(f => (s += feld(f)));
   speichen.forEach(sp => sp.felder.forEach(f => (s += feld(f))));
@@ -180,22 +201,24 @@ function planInhalt() {
     s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT}" fill="${o.farbe}" stroke="#fff" stroke-width="1.2"/>`;
     s += `<circle cx="${f.x}" cy="${f.y - 4}" r="15.5" fill="#fff"/>`;
     s += emoSvg(o.emoji, f.x, f.y - 4, 21);
-    s += `<text x="${f.x}" y="${f.y + 18.6}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${o.name.length > 9 ? 4.3 : 4.8}" fill="#fff">${esc(o.name)}</text>`;
-    // Gegenstand-Abzeichen, Richtung Plan-Mitte gedreht
-    const a = ((f.x < 200 ? -135 : -45) * Math.PI) / 180; // schräg oben, weg vom Namen
+    const fs_ = o.name.length > 12 ? 3.6 : o.name.length > 9 ? 4.2 : 4.8;
+    s += `<text x="${f.x}" y="${f.y + 18.6}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="#fff">${esc(o.name)}</text>`;
+    // Gegenstand-Abzeichen schräg oben, weg vom Namen
+    const a = ((f.x < 200 ? -135 : -45) * Math.PI) / 180;
     const bx = f.x + Math.cos(a) * 25, by = f.y + Math.sin(a) * 25;
     s += `<circle cx="${bx}" cy="${by + 0.5}" r="8.6" fill="#000" opacity="0.18"/>`;
     s += `<circle cx="${bx}" cy="${by}" r="8.6" fill="#fff" stroke="${o.farbe}" stroke-width="1.4"/>`;
     s += emoSvg(o.ding.emoji, bx, by, 11);
   });
 
-  // Jakobs Zimmer
+  // Susis Weihnachtsstube
   s += `<circle cx="${C.x}" cy="${C.y + 1}" r="${R_ZIMMER}" fill="#000" opacity="0.18"/>`;
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER}" fill="#ffe0b2" stroke="#e65100" stroke-width="1.6"/>`;
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 3}" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="2 2"/>`;
-  s += emoSvg('🏠', C.x, C.y - 8, 34);
-  s += `<text x="${C.x}" y="${C.y + 19}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="7" fill="#bf360c">Jakobs Zimmer</text>`;
-  s += `<text x="${C.x}" y="${C.y + 26}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="4" fill="#bf360c">START &amp; ZIEL</text>`;
+  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER}" fill="#fff3e0" stroke="#c62828" stroke-width="1.8"/>`;
+  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 3}" fill="none" stroke="#e6a100" stroke-width="0.8" stroke-dasharray="2 2"/>`;
+  s += emoSvg(D.zentrum.emoji, C.x - 3, C.y - 11, 30) + emoSvg('🎄', C.x + 17, C.y - 6, 15);
+  s += `<text x="${C.x}" y="${C.y + 13}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[0])}</text>`;
+  s += `<text x="${C.x}" y="${C.y + 20}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[1])}</text>`;
+  s += `<text x="${C.x}" y="${C.y + 27}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.8" fill="#2e7d32">START &amp; ZIEL</text>`;
   return s;
 }
 
@@ -236,7 +259,7 @@ function planDateien() {
 }
 
 // ======================================================================
-// JAKOB-KARTEN (63 x 88 mm, 9 pro A4-Bogen, mit Rückseiten)
+// WICHTEL-KARTEN (63 x 88 mm, 9 pro A4-Bogen, mit Rückseiten)
 // ======================================================================
 const KW = 63, KH = 88;
 const KARTEN_CSS = `
@@ -255,10 +278,10 @@ const KARTEN_CSS = `
 .behalten+.fuss{margin-top:1mm}
 .linien{width:100%;margin-top:3mm;display:flex;flex-direction:column;gap:5.5mm}
 .linien div{border-bottom:0.25mm dashed #bbb;height:0}
-.rueck{width:100%;height:100%;border-radius:3.5mm;background:radial-gradient(circle at 50% 45%,#5c6bc0 0,#283593 70%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.2mm solid #ffd54f}
-.rueck .kreis{width:34mm;height:34mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.4mm #fff}
+.rueck{width:100%;height:100%;border-radius:3.5mm;background:radial-gradient(circle at 50% 42%,#e53935 0,#8e0000 75%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.2mm solid #ffd54f}
+.rueck .kreis{width:34mm;height:34mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.4mm #ffd54f}
 .rueck .wort{font-family:Fredoka;font-weight:700;font-size:7mm;color:#fff;margin-top:4mm;letter-spacing:0.3mm}
-.rueck .klein{font-family:Fredoka;font-weight:500;font-size:3mm;color:#c5cae9;margin-top:1mm}
+.rueck .klein{font-family:Fredoka;font-weight:500;font-size:3mm;color:#ffcdd2;margin-top:1mm}
 .funkeln{position:absolute}
 `;
 
@@ -282,11 +305,11 @@ function leereKarte() {
   </div></div>`;
 }
 function kartenRueckseite() {
-  const funken = [[8, 10, 5], [46, 14, 4], [12, 66, 4], [44, 70, 6], [28, 6, 3], [6, 40, 3], [51, 42, 3.5]]
-    .map(([x, y, s]) => `<div class="funkeln" style="left:${x}mm;top:${y}mm">${emoHtml('✨', s)}</div>`).join('');
+  const funken = [[8, 10, 5, '❄️'], [46, 14, 4, '✨'], [12, 66, 4, '✨'], [44, 70, 6, '❄️'], [28, 6, 3, '✨'], [6, 40, 3, '❄️'], [51, 42, 3.5, '✨']]
+    .map(([x, y, s, e]) => `<div class="funkeln" style="left:${x}mm;top:${y}mm">${emoHtml(e, s)}</div>`).join('');
   return `<div class="karte"><div class="rueck">${funken}
-    <div class="kreis">${emoHtml('⭐', 24)}</div>
-    <div class="wort">Jakob-Karte</div>
+    <div class="kreis">${emoHtml('🧝', 25)}</div>
+    <div class="wort">${esc(D.kartenName)}</div>
     <div class="klein">${esc(D.titel)}</div>
   </div></div>`;
 }
@@ -300,14 +323,14 @@ function kartenDatei() {
   const boegen = Math.ceil(vorder.length / 9);
   for (let b = 0; b < boegen; b++) {
     const teil = vorder.slice(b * 9, b * 9 + 9);
-    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">Jakob-Karten · Bogen ${b + 1}/${boegen} · Vorderseite</div><div class="raster">${teil.join('')}</div>${marken}</div>`;
-    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">Jakob-Karten · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array(9).fill(kartenRueckseite()).join('')}</div>${marken}</div>`;
+    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Vorderseite</div><div class="raster">${teil.join('')}</div>${marken}</div>`;
+    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array(9).fill(kartenRueckseite()).join('')}</div>${marken}</div>`;
   }
-  return { name: '03_Jakob-Karten_A4_beidseitig', html: htmlDoc('Jakob-Karten', KARTEN_CSS, body), anzahl: vorder.length };
+  return { name: '03_Wichtel-Karten_A4_beidseitig', html: htmlDoc(D.kartenNameMehrzahl, KARTEN_CSS, body), anzahl: vorder.length };
 }
 
 // ======================================================================
-// SUCHLISTEN (95 x 95 mm, 4 pro A4)
+// WEIHNACHTSLISTEN (95 x 95 mm, 4 pro A4)
 // ======================================================================
 const SL = 95;
 function suchlistenDatei() {
@@ -316,15 +339,15 @@ function suchlistenDatei() {
   .page{width:210mm;height:297mm}
   .raster{position:absolute;left:10mm;top:20mm;display:grid;grid-template-columns:repeat(2,${SL}mm);grid-template-rows:repeat(2,${SL}mm);gap:0}
   .liste{width:${SL}mm;height:${SL}mm;padding:2mm;outline:0.15mm solid #ccc}
-  .rahmen{width:100%;height:100%;border-radius:4mm;background:#fffdf5;border:1.4mm solid #ff8f00;display:flex;flex-direction:column;align-items:center;padding:2mm 3mm}
-  .kopf{display:flex;align-items:center;gap:2mm;font-family:Fredoka;font-weight:700;font-size:6mm;color:#e65100;height:9mm}
-  .nr{font-family:Fredoka;font-weight:500;font-size:3mm;color:#fff;background:#ff8f00;border-radius:2mm;padding:0.3mm 1.8mm;margin-left:1mm}
+  .rahmen{width:100%;height:100%;border-radius:4mm;background:#fffaf5;border:1.4mm solid #c62828;display:flex;flex-direction:column;align-items:center;padding:2mm 3mm}
+  .kopf{display:flex;align-items:center;gap:2mm;font-family:Fredoka;font-weight:700;font-size:6mm;color:#b71c1c;height:9mm}
+  .nr{font-family:Fredoka;font-weight:500;font-size:3mm;color:#fff;background:#2e7d32;border-radius:2mm;padding:0.3mm 1.8mm;margin-left:1mm}
   .felder{display:grid;grid-template-columns:repeat(2,32mm);grid-template-rows:repeat(2,32mm);gap:3mm;margin-top:1.5mm}
   .slot{border:0.6mm dashed var(--f);border-radius:2.5mm;background:var(--h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6mm}
   .slot .emo{opacity:0.9}
   .slot .n{font-family:Fredoka;font-weight:600;font-size:3.6mm;color:#333;line-height:1}
   .slot .o{font-size:2.7mm;font-weight:800;color:var(--f);display:flex;align-items:center;gap:0.6mm;line-height:1}
-  .tipp{margin-top:auto;font-size:2.7mm;font-weight:700;color:#8d6e63;display:flex;align-items:center;gap:1mm}
+  .tipp{margin-top:auto;font-size:2.7mm;font-weight:700;color:#2e7d32;display:flex;align-items:center;gap:1mm}
   `;
   const tint = (hex, a) => {
     const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
@@ -332,28 +355,28 @@ function suchlistenDatei() {
     return `rgb(${m(r)},${m(g)},${m(b)})`;
   };
   const karte = (l, i) => `<div class="liste"><div class="rahmen">
-    <div class="kopf">${emoHtml('📜', 7)}Suchliste<span class="nr">Nr. ${i + 1}</span></div>
+    <div class="kopf">${emoHtml('📝', 7)}${esc(D.listenName)}<span class="nr">Nr. ${i + 1}</span></div>
     <div class="felder">${l.map(id => {
       const o = ortById[id];
       return `<div class="slot" style="--f:${o.farbe};--h:${tint(o.farbe, 0.12)}">${emoHtml(o.ding.emoji, 14)}<div class="n">${esc(o.ding.name)}</div><div class="o">${emoHtml(o.emoji, 3.2)}${esc(o.name)}</div></div>`;
     }).join('')}</div>
-    <div class="tipp">Alles gefunden? Dann schnell zurück in Jakobs Zimmer! ${emoHtml('🏠', 3.4)}</div>
+    <div class="tipp">Alles gefunden? Dann schnell zurück zu Susi! ${emoHtml(D.zentrum.emoji, 3.4)}</div>
   </div></div>`;
   let body = '';
   const seiten = Math.ceil(D.suchlisten.length / 4);
   for (let s = 0; s < seiten; s++) {
-    body += `<div class="page"><div class="seitenhinweis" style="left:10mm;top:11mm">Suchlisten · Bogen ${s + 1}/${seiten} · nur Vorderseite drucken</div>
+    body += `<div class="page"><div class="seitenhinweis" style="left:10mm;top:11mm">Weihnachtslisten · Bogen ${s + 1}/${seiten} · nur Vorderseite drucken</div>
       <div class="raster">${D.suchlisten.slice(s * 4, s * 4 + 4).map((l, i) => karte(l, s * 4 + i)).join('')}</div>
       ${markenSvg(210, 297, schnittmarken(10, 20, 190, 190, [10 + SL], [20 + SL]))}</div>`;
   }
-  return { name: '04_Suchlisten_A4', html: htmlDoc('Suchlisten', css, body), tint };
+  return { name: '04_Weihnachtslisten_A4', html: htmlDoc('Weihnachtslisten', css, body), tint };
 }
 
 // ======================================================================
 // GEGENSTÄNDE (30 x 30 mm Plättchen, 6 x 8 = 48 auf einem A4-Bogen)
 // ======================================================================
 function gegenstaendeDatei(tint) {
-  const P = 30, cols = 6, rows = 8, x0 = 15, y0 = 28.5;
+  const P = 30, cols = 6, rows = 9, x0 = 15, y0 = 13;
   const css = `@page{size:A4;margin:0}.page{width:210mm;height:297mm}
   .raster{position:absolute;left:${x0}mm;top:${y0}mm;display:grid;grid-template-columns:repeat(${cols},${P}mm);grid-template-rows:repeat(${rows},${P}mm)}
   .chip{width:${P}mm;height:${P}mm;background:var(--h);display:flex;flex-direction:column;align-items:center;justify-content:center;outline:0.15mm solid #bbb;position:relative}
@@ -361,8 +384,11 @@ function gegenstaendeDatei(tint) {
   .chip .n{font-family:Fredoka;font-weight:600;font-size:3.1mm;color:var(--f);margin-top:0.6mm;line-height:1}`;
   const chips = [];
   D.orte.forEach(o => { for (let i = 0; i < D.exemplareProDing; i++) chips.push(`<div class="chip" style="--f:${o.farbe};--h:${tint(o.farbe, 0.15)}">${emoHtml(o.ding.emoji, 16)}<div class="n">${esc(o.ding.name)}</div></div>`); });
+  const anzahlDinge = chips.length;
+  chips.push(`<div class="chip" style="--f:#b8860b;--h:#fff8e1">${emoHtml('🌟', 16)}<div class="n">Kalender</div></div>`);
+  while (chips.length < cols * rows) chips.push(`<div class="chip" style="--f:#9e9e9e;--h:#fafafa"><div class="n" style="margin-top:17mm">Ersatz</div></div>`);
   const xs = Array.from({ length: cols - 1 }, (_, i) => x0 + (i + 1) * P), ys = Array.from({ length: rows - 1 }, (_, i) => y0 + (i + 1) * P);
-  const body = `<div class="page"><div class="seitenhinweis" style="left:15mm;top:14mm;font-size:3.2mm">Gegenstände · ${chips.length} Plättchen (je ${D.exemplareProDing}×) · auf Karton drucken, mit Lineal/Papierschneider an den Linien schneiden</div>
+  const body = `<div class="page"><div class="seitenhinweis" style="left:15mm;top:3.5mm;font-size:2.8mm">Gegenstände · ${anzahlDinge} Plättchen (je ${D.exemplareProDing}×) + Kalender-Stern + Ersatz zum Bemalen · auf Karton drucken, mit Lineal/Papierschneider schneiden</div>
     <div class="raster">${chips.join('')}</div>${markenSvg(210, 297, schnittmarken(x0, y0, cols * P, rows * P, xs, ys))}</div>`;
   return { name: '05_Gegenstaende_A4', html: htmlDoc('Gegenstände', css, body) };
 }
@@ -394,9 +420,17 @@ function figurPanel(fig, w, h) {
     // Platzhalter-Silhouette
     const k = fig.kind ? 0.85 : 1;
     s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f5f5f5"/>`;
-    s += `<g clip-path="none"><circle cx="${cx}" cy="${cy - 3.5 * k}" r="${4.6 * k}" fill="${fig.farbe}"/>`;
-    s += `<path d="M${cx - 8.5 * k} ${cy + 10.5} Q${cx - 8.5 * k} ${cy + 2 * k} ${cx} ${cy + 2 * k} Q${cx + 8.5 * k} ${cy + 2 * k} ${cx + 8.5 * k} ${cy + 10.5} Z" fill="${fig.farbe}"/></g>`;
+    const kopfY = cy - 1.5 * k, kr = 4.6 * k;
+    s += `<clipPath id="pl-${fig.id}-${w}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath><g clip-path="url(#pl-${fig.id}-${w})">`;
+    s += `<circle cx="${cx}" cy="${kopfY}" r="${kr}" fill="${fig.farbe}"/>`;
+    s += `<path d="M${cx - 8.5 * k} ${cy + 12} Q${cx - 8.5 * k} ${cy + 3 * k} ${cx} ${cy + 3 * k} Q${cx + 8.5 * k} ${cy + 3 * k} ${cx + 8.5 * k} ${cy + 12} Z" fill="${fig.farbe}"/>`;
+    // Weihnachtsmütze
+    s += `<path d="M${cx - kr} ${kopfY - 3.8 * k} Q${cx - 1} ${kopfY - 11.5 * k} ${cx + 6.5 * k} ${kopfY - 9.5 * k} L${cx + kr} ${kopfY - 3.8 * k} Z" fill="#d32f2f"/>`;
+    s += `<rect x="${cx - kr - 0.8}" y="${kopfY - 5.2 * k}" width="${2 * kr + 1.6}" height="${2.2 * k}" rx="${1.1 * k}" fill="#fff" stroke="#ddd" stroke-width="0.2"/>`;
+    s += `<circle cx="${cx + 6.5 * k}" cy="${kopfY - 9.5 * k}" r="${1.5 * k}" fill="#fff" stroke="#ddd" stroke-width="0.2"/></g>`;
   }
+  if (fig.stern) s += emoSvg('⭐', w - 5, 5, 7);
+  s += emoSvg('❄️', 4.5, 4.5, 4);
   const fs_ = fig.name.length > 6 ? 4.6 : 5.4;
   s += `<rect x="2.5" y="${h - 13}" width="${w - 5}" height="9" rx="2.5" fill="#fff"/>`;
   s += `<text x="${cx}" y="${h - 6.8}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="${fig.farbe}">${esc(fig.name)}</text>`;
@@ -439,15 +473,15 @@ function regelDatei() {
   const artZeile = (k, t) => `<div class="kart" style="--f:${ka[k].farbe};--h:${ka[k].hell}"><b>${emoHtml(ka[k].emoji, 4)}${ka[k].name}</b><span>${t}</span></div>`;
   const css = `@page{size:A4;margin:0}
   .page{width:210mm;height:297mm;padding:13mm 15mm 12mm;background:#fffdf7}
-  h1{font-family:Fredoka;font-weight:700;font-size:13mm;line-height:1;color:#d84315;display:flex;align-items:center;gap:3mm}
-  .unter{font-family:Fredoka;font-weight:500;font-size:4.2mm;color:#6a1b9a;margin:2mm 0 4mm;display:flex;gap:5mm;flex-wrap:wrap}
+  h1{font-family:Fredoka;font-weight:700;font-size:13mm;line-height:1;color:#c62828;display:flex;align-items:center;gap:3mm}
+  .unter{font-family:Fredoka;font-weight:500;font-size:4.2mm;color:#2e7d32;margin:2mm 0 4mm;display:flex;gap:5mm;flex-wrap:wrap}
   .unter span{display:flex;align-items:center;gap:1.2mm}
-  h2{font-family:Fredoka;font-weight:600;font-size:5.6mm;color:#1565c0;margin:4.2mm 0 1.6mm;display:flex;align-items:center;gap:2mm;border-bottom:0.5mm solid #bbdefb;padding-bottom:0.8mm}
-  p,li{font-size:3.55mm;line-height:1.42}
+  h2{font-family:Fredoka;font-weight:600;font-size:5.6mm;color:#1b5e20;margin:3.8mm 0 1.4mm;display:flex;align-items:center;gap:2mm;border-bottom:0.5mm solid #c8e6c9;padding-bottom:0.8mm}
+  p,li{font-size:3.45mm;line-height:1.38}
   ul,ol{padding-left:5.5mm}
   li{margin:0.6mm 0}
   b{font-weight:800}
-  .story{background:#fff3e0;border-radius:4mm;padding:3mm 4mm;font-size:3.8mm;line-height:1.45;border-left:1.5mm solid #ff9800}
+  .story{background:#ffebee;border-radius:4mm;padding:3mm 4mm;font-size:3.8mm;line-height:1.45;border-left:1.5mm solid #c62828}
   .zwei{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
   .oc{display:inline-flex;align-items:center;gap:0.8mm;font-size:3.1mm;font-weight:700;border:0.4mm solid var(--f);color:#333;border-radius:2mm;padding:0.4mm 1.6mm;margin:0.6mm 0.6mm 0 0}
   .oc .emo{display:inline-block}
@@ -455,16 +489,22 @@ function regelDatei() {
   .kart>b{display:flex;align-items:center;gap:1.2mm;color:var(--f);font-family:Fredoka;font-weight:600;font-size:4mm}
   .box{background:#e8f5e9;border-radius:4mm;padding:2.5mm 4mm;margin-top:2mm}
   .box.lila{background:#f3e5f5}
+  .box.rot{background:#fff8e1;border:0.4mm solid #e6a100}
   .box.blau{background:#e3f2fd}
   .inl{display:inline-block;vertical-align:-0.8mm}
   .fuss{position:absolute;bottom:7mm;left:15mm;right:15mm;font-size:2.4mm;color:#aaa;display:flex;justify-content:space-between}
   `;
   const i = (ch, s = 4) => emoHtml(ch, s, 'inl');
+  const abzweig = D.orte.filter(o => o.mitte).map(o => o.name);
+  const abzweigText = abzweig.slice(0, -1).join(', ') + ' und ' + abzweig[abzweig.length - 1];
+  const KN = D.kartenName, KNM = D.kartenNameMehrzahl, LN = D.listenName, Z = D.zentrum.name;
+  const kartenZahl = D.jakobKarten.reduce((a, k) => a + k.anzahl, 0);
   const seite1 = `<div class="page">
-    <h1>${emoHtml('🔍', 12)}${esc(D.titel)}</h1>
+    <h1>${emoHtml('🎄', 12)}${esc(D.titel)}</h1>
     <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Spieler · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
-    <div class="story">Oje! Jakob hat beim Spielen seine Lieblingssachen überall verteilt – im Wald, im Zoo, im Schwimmbad … Jetzt hilft die ganze Familie beim Suchen.
-    <b>Wer zuerst alle Sachen von seiner Suchliste findet und zurück in Jakobs Zimmer bringt, gewinnt!</b></div>
+    <div class="story">Es ist der 24. Dezember! Susi möchte für Jakob und die ganze Familie das schönste Weihnachtsfest aller Zeiten vorbereiten.
+    Doch oje, es fehlt noch so viel: der Christbaum, die Plätzchen, die Kerzen … Zum Glück helfen alle mit!
+    <b>Wer zuerst alle Sachen von seiner ${LN} findet und zu Susi in die Weihnachtsstube bringt, gewinnt!</b></div>
 
     <div class="zwei">
     <div>
@@ -472,83 +512,89 @@ function regelDatei() {
       <ul>
         <li>1 Spielplan</li>
         <li>10 Spielfiguren</li>
-        <li>${D.orte.length * D.exemplareProDing} Gegenstände (je ${D.exemplareProDing}× ${D.orte.length} Sorten)</li>
-        <li>${D.suchlisten.length} Suchlisten</li>
-        <li>${D.jakobKarten.reduce((a, k) => a + k.anzahl, 0)} Jakob-Karten (+ ${D.leereKarten} leere für eigene Ideen)</li>
+        <li>${D.orte.length * D.exemplareProDing} Gegenstände (je ${D.exemplareProDing}× ${D.orte.length} Sorten) und 1 Kalender-Stern</li>
+        <li>${D.suchlisten.length} ${LN}n</li>
+        <li>${kartenZahl} ${KNM} (+ ${D.leereKarten} leere für eigene Ideen)</li>
         <li>1 Würfel</li>
       </ul>
     </div>
     <div>
       <h2>${emoHtml('🧩', 6)}Vorbereitung</h2>
       <ol>
-        <li>Jeder sucht sich eine <b>Figur</b> aus und stellt sie in <b>Jakobs Zimmer</b> (Mitte).</li>
+        <li>Jeder sucht sich eine <b>Figur</b> aus und stellt sie in <b>${Z}</b> (Mitte).</li>
         <li>Die <b>Gegenstände</b> nach Sorten neben den Plan legen (Vorrat).</li>
-        <li><b>Suchlisten</b> mischen, jeder zieht eine und legt sie <b>offen</b> vor sich.</li>
-        <li><b>Jakob-Karten</b> mischen und verdeckt bereitlegen.</li>
+        <li>Die <b>${LN}n</b> mischen. Jeder zieht eine und legt sie <b>offen</b> vor sich.</li>
+        <li>Die <b>${KNM}</b> mischen und verdeckt bereitlegen.</li>
         <li>Die <b>jüngste</b> Person beginnt, dann geht es im Uhrzeigersinn weiter.</li>
       </ol>
     </div>
     </div>
 
-    <h2>${emoHtml('🗺️', 6)}Wo liegt was?</h2>
-    <p>Jeder Ort hat einen Gegenstand. Das kleine Bild am Ort zeigt, was man dort findet:</p>
+    <h2>${emoHtml('🗺️', 6)}Wo gibt es was?</h2>
+    <p>An jedem Ort im Weihnachtsdorf gibt es eine Sache. Das kleine Bild am Ort zeigt, welche:</p>
     <div>${ortChips}</div>
 
     <h2>${emoHtml('🎲', 6)}So spielst du</h2>
     <ol>
-      <li><b>Würfeln</b> und genau so viele Felder ziehen.</li>
-      <li><b>Die Richtung darfst du jedes Mal selbst wählen</b> – vorwärts oder rückwärts. Nur während eines Zuges darfst du nicht umdrehen.</li>
-      <li>An den <b>4 Abzweigungen</b> (Spielplatz, Bäckerei, Bahnhof, Schwimmbad) darfst du in Richtung Mitte abbiegen.
-          <b>Jakobs Zimmer zählt als 1 Feld.</b> Du darfst einfach hindurchgehen und auf einem anderen Weg wieder hinaus – eine tolle Abkürzung!</li>
+      <li><b>Würfle</b> und zieh genau so viele Felder.</li>
+      <li><b>Die Richtung darfst du jedes Mal selbst wählen</b>, vorwärts oder rückwärts. Nur während eines Zuges darfst du nicht umdrehen.</li>
+      <li>An den <b>4 Abzweigungen</b> (${abzweigText}) darfst du in Richtung Mitte abbiegen.
+          <b>${Z} zählt als 1 Feld.</b> Du darfst einfach hindurchgehen und auf einem anderen Weg wieder hinaus. Das ist eine tolle Abkürzung!</li>
       <li>Auf einem Feld dürfen beliebig viele Figuren stehen.</li>
     </ol>
-    <div class="box blau" style="margin-top:2mm"><p><b>Beispiel:</b> Du stehst in Jakobs Zimmer und würfelst eine <b>3</b>. Damit kommst du genau zum Spielplatz, zur Bäckerei, zum Bahnhof oder zum Schwimmbad – du suchst dir aus, wohin.</p></div>
+    <div class="box blau" style="margin-top:2mm"><p><b>Beispiel:</b> Du stehst in ${Z} und würfelst eine <b>3</b>. Damit kommst du genau zu ${abzweig.map(n => '<b>' + n + '</b>').join(', ').replace(/, ([^,]*)$/, ' oder $1')}. Du suchst dir aus, wohin.</p></div>
 
     <h2>${emoHtml('📍', 6)}Wo bist du gelandet?</h2>
     <ul>
-      <li><b>Auf einem Ort:</b> Steht der Gegenstand dieses Ortes auf deiner Suchliste und hast du ihn noch nicht? Dann nimm ihn dir aus dem Vorrat und leg ihn auf deine Liste. Das gilt auch, wenn dich eine Karte dorthin schickt.</li>
-      <li><b>Auf einem Sternfeld</b> ${i('⭐', 3.6)}: Zieh eine <b>Jakob-Karte</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
-      <li><b>Auf einem leeren Feld:</b> Nichts passiert – der Nächste ist dran.</li>
+      <li><b>Auf einem Ort:</b> Steht die Sache dieses Ortes auf deiner ${LN} und hast du sie noch nicht? Dann nimm sie dir aus dem Vorrat und leg sie auf deine Liste. Das gilt auch, wenn dich eine Karte dorthin schickt.</li>
+      <li><b>Auf einem Sternfeld</b> ${i('⭐', 3.6)}: Zieh eine <b>${KN}</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
+      <li><b>Auf einem leeren Feld:</b> Es passiert nichts, und der Nächste ist dran.</li>
     </ul>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel</span><span>Seite 1/2</span></div>
   </div>`;
 
   const seite2 = `<div class="page">
-    <h2 style="margin-top:0">${emoHtml('🃏', 6)}Die Jakob-Karten</h2>
+    <h2 style="margin-top:0">${emoHtml('🧝', 6)}Die ${KNM}</h2>
     ${artZeile('glueck', 'Gute Nachrichten! Du kommst schneller voran.')}
-    ${artZeile('hoppla', 'Jakob hat eine Idee – und du musst mit. Manchmal hilft das sogar!')}
+    ${artZeile('hoppla', 'Susi oder Jakob haben eine Idee, und du musst mit. Manchmal hilft das sogar!')}
     ${artZeile('miteinander', 'Jetzt machen alle mit: lachen, raten, singen. Oft dürfen mehrere ziehen.')}
-    ${artZeile('joker', '<b>Behalte diese Karte</b> offen vor dir und spiel sie, wann du willst. Du darfst höchstens <b>2 Joker</b> haben. Danach kommt sie unter den Stapel.')}
-    <p style="margin-top:1.5mm">Wichtig: Eine neue Jakob-Karte gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
+    ${artZeile('joker', '<b>Behalte diese Karte</b> offen vor dir und spiel sie, wann du willst. Du darfst höchstens <b>2 Joker</b> haben. Nach dem Ausspielen kommt sie unter den Stapel.')}
+    <p style="margin-top:1.2mm">Wichtig: Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
 
     <h2>${emoHtml('🏆', 6)}Wer gewinnt?</h2>
-    <p>Hast du <b>alle 4 Gegenstände</b> deiner Suchliste? Dann ab nach Hause! Wer als Erstes <b>Jakobs Zimmer</b> erreicht, gewinnt.
-    Du musst das Zimmer <b>nicht genau</b> treffen – übrige Würfelpunkte verfallen. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
+    <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes <b>${Z}</b> erreicht, gewinnt.
+    Du musst die Stube <b>nicht genau</b> treffen, übrige Würfelpunkte verfallen. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
 
     <h2>${emoHtml('👫', 6)}Team-Spiel für 7 bis 10 Personen</h2>
     <div class="box blau">
     <ul>
-      <li>Bildet <b>Zweier-Teams</b> (bei einer ungeraden Zahl gibt es ein Dreier-Team). Jede Person spielt mit ihrer eigenen Figur.</li>
-      <li>Jedes Team hat <b>eine gemeinsame Suchliste</b>. Die Teams sind reihum dran. Im Team wird abwechselnd gewürfelt.</li>
+      <li>Bildet <b>Zweier-Teams</b> (bei ungerader Zahl ein Dreier-Team). Jede Person hat ihre eigene Figur, jedes Team <b>eine gemeinsame ${LN}</b>. Die Teams sind reihum dran, im Team wird abwechselnd gewürfelt.</li>
       <li>Nach dem Würfeln entscheidet das Team gemeinsam, <b>welche seiner Figuren</b> zieht.</li>
-      <li>Gegenstände, die irgendeine Figur des Teams findet, gehören dem ganzen Team. Auch Joker gehören dem Team (höchstens 2).</li>
-      <li>Das Team gewinnt, sobald die Liste voll ist und <b>eine</b> seiner Figuren Jakobs Zimmer erreicht.</li>
+      <li>Was irgendeine Figur des Teams findet, gehört dem ganzen Team. Auch Joker gehören dem Team (höchstens 2).</li>
+      <li>Das Team gewinnt, sobald die Liste voll ist und <b>eine</b> seiner Figuren ${Z} erreicht.</li>
     </ul>
-    <p style="margin-top:1mm">Tipp: Das Team-Spiel klappt auch mit weniger Personen – zum Beispiel Groß und Klein zusammen.</p>
     </div>
 
-    <h2>${emoHtml('⚙️', 6)}Varianten</h2>
+    <h2>${emoHtml('🌟', 6)}Gemeinsam bis Heiligabend</h2>
+    <div class="box rot">
+      <p>In dieser Variante spielen <b>alle zusammen gegen die Zeit</b>. Legt den <b>Kalender-Stern</b> auf ein Türchen des Adventskalenders auf dem Spielplan:
+      <b>1</b> (leicht), <b>8</b> (mittel) oder <b>12</b> (schwer).</p>
+      <ul>
+        <li>Immer wenn alle einmal dran waren, rückt der Stern auf das <b>nächste Türchen</b> (die nächsthöhere Zahl suchen!).</li>
+        <li>Bei jeder <b>Hoppla-Karte</b> rückt er zusätzlich ein Türchen weiter.</li>
+        <li>Ihr dürft euch beraten und Joker-Karten einander schenken.</li>
+        <li>Ihr gewinnt alle zusammen, wenn <b>alle Listen voll</b> sind und <b>alle Figuren</b> in ${Z} stehen, bevor der Stern das <b>Türchen 24</b> erreicht.</li>
+      </ul>
+    </div>
+
+    <h2>${emoHtml('⚙️', 6)}Noch mehr Varianten</h2>
     <div class="box">
-      <p><b>${i('🐣')} Für die Kleinsten:</b> Ein Gegenstand darf schon eingesammelt werden, wenn man an seinem Ort nur <b>vorbeizieht</b>.</p>
-      <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Gegenstände</b> – einen beliebigen auf der Liste vorher abdecken.</p>
+      <p><b>${i('🐣')} Für die Kleinsten:</b> Eine Sache darf man schon einsammeln, wenn man an ihrem Ort nur <b>vorbeizieht</b>.</p>
+      <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Sachen</b>. Deckt vorher eine beliebige auf der Liste ab.</p>
+      <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>. ${Z} muss am Schluss <b>genau</b> erreicht werden, und jeder darf nur <b>1 Joker</b> haben.</p>
     </div>
-    <div class="box lila">
-      <p><b>${i('🧠')} Für Profis:</b> Suchlisten werden <b>geheim</b> gehalten. Jakobs Zimmer muss am Schluss <b>genau</b> erreicht werden, und jeder darf nur <b>1 Joker</b> auf der Hand haben.</p>
-    </div>
-
-    <h2>${emoHtml('✏️', 6)}Eigene Karten</h2>
-    <p>Auf die leeren Karten könnt ihr eigene Ideen schreiben – etwa Jakobs Lieblingswitz oder eine kleine Aufgabe für alle – und sie in den Stapel mischen.</p>
-    <p style="margin-top:5mm;text-align:center;font-family:Fredoka;font-size:5mm;color:#d84315">Viel Spaß beim Suchen! ${i('🧸', 5)}${i('⚽', 5)}${i('🔦', 5)}</p>
+    <p style="margin-top:2.5mm"><b>${i('✏️')} Eigene Karten:</b> Auf die leeren Karten könnt ihr eigene Ideen schreiben, etwa Susis Lieblingswitz oder eine kleine Weihnachtsaufgabe für alle.</p>
+    <p style="margin-top:2.5mm;text-align:center;font-family:Fredoka;font-size:5mm;color:#c62828">Frohe Weihnachten und viel Spaß! ${i('🎄', 5)}${i('🎁', 5)}${i('⭐', 5)}</p>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel · Bilder: Twemoji (CC-BY 4.0)</span><span>Seite 2/2</span></div>
   </div>`;
   return { name: '02_Spielregel_A4', html: htmlDoc('Spielregel', css, seite1 + seite2) };
@@ -559,24 +605,25 @@ function regelDatei() {
 // ======================================================================
 function deckelDatei() {
   const css = `@page{size:A4 landscape;margin:0}
-  .page{width:297mm;height:210mm;background:radial-gradient(circle at 50% 40%,#e8f5d0 0,#b9dc8f 80%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-  .rahmen{position:absolute;inset:6mm;border:2mm solid #fff;border-radius:8mm}
-  .t1{font-family:Fredoka;font-weight:700;font-size:26mm;color:#d84315;line-height:1}
-  .t2{font-family:Fredoka;font-weight:700;font-size:22mm;color:#1565c0;line-height:1.05}
-  .reihe{display:flex;gap:5mm;margin:7mm 0 6mm}
-  .reihe div{width:22mm;height:22mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5mm var(--f)}
-  .info{font-family:Fredoka;font-weight:500;font-size:6mm;color:#33691e}
-  .widmung{font-family:Fredoka;font-weight:500;font-size:5.5mm;color:#6a1b9a;margin-top:5mm}
+  .page{width:297mm;height:210mm;background:radial-gradient(circle at 50% 42%,#d32f2f 0,#8e0000 85%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .rahmen{position:absolute;inset:6mm;border:1.6mm solid #ffd54f;border-radius:8mm}
+  .rahmen2{position:absolute;inset:9mm;border:0.5mm dashed #ffe082;border-radius:6mm}
+  .t1{font-family:Fredoka;font-weight:700;font-size:24mm;color:#fff;line-height:1}
+  .t2{font-family:Fredoka;font-weight:700;font-size:26mm;color:#ffd54f;line-height:1.05;display:flex;align-items:center;gap:4mm}
+  .reihe{display:flex;gap:5mm;margin:8mm 0 6mm}
+  .reihe div{width:22mm;height:22mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5mm var(--f),0 0 0 2.6mm #fff}
+  .info{font-family:Fredoka;font-weight:500;font-size:6mm;color:#fff}
+  .widmung{font-family:Fredoka;font-weight:500;font-size:5.5mm;color:#ffe082;margin-top:5mm}
   .ecke{position:absolute}`;
-  const deko = [['🦋', 18, 16, 14], ['🌼', 262, 18, 12], ['🐞', 20, 174, 11], ['🍄', 262, 172, 12], ['⭐', 40, 40, 8], ['⭐', 246, 150, 8]]
+  const deko = [['🎄', 16, 14, 18], ['🎅', 262, 16, 16], ['⛄', 18, 172, 16], ['🦌', 262, 172, 16], ['❄️', 52, 30, 7], ['❄️', 236, 158, 7], ['✨', 60, 160, 7], ['✨', 228, 34, 7], ['⭐', 30, 98, 6], ['⭐', 262, 100, 6]]
     .map(([e, x, y, s]) => `<div class="ecke" style="left:${x}mm;top:${y}mm">${emoHtml(e, s)}</div>`).join('');
-  const body = `<div class="page"><div class="rahmen"></div>${deko}
-    <div class="t1">Jakobs große</div><div class="t2">Schatzsuche ${emoHtml('🔍', 18, 'inl')}</div>
+  const body = `<div class="page"><div class="rahmen"></div><div class="rahmen2"></div>${deko}
+    <div class="t1">Susis</div><div class="t2">Weihnachtszauber</div>
     <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 14)}</div>`).join('')}</div>
     <div class="info">2–6 Spieler · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
     ${D.widmung ? `<div class="widmung">${esc(D.widmung)}</div>` : ''}
   </div>`;
-  return { name: '07_Schachteldeckel_A4', html: htmlDoc('Schachteldeckel', css + '.inl{display:inline-block;vertical-align:-2mm}', body) };
+  return { name: '07_Schachteldeckel_A4', html: htmlDoc('Schachteldeckel', css, body) };
 }
 
 // ======================================================================
