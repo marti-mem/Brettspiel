@@ -1,16 +1,16 @@
 // Alle Inhalte des Spiels an einem Ort – hier kann man Texte, Namen und Farben ändern.
 // Danach `npm run build` ausführen, um die Druck-PDFs neu zu erzeugen.
 
-const titel = 'Susis Weihnachtsdinner';
-const titelZeilen = ['Susis', 'Weihnachts-', 'dinner'];
-const untertitel = 'Das perfekte Weihnachtsessen'; // so steht der Titel auf dem Spielplan
+const titel = 'Susis perfektes Weihnachtsdinner';
+const titelZeilen = ['Susis', 'perfektes', 'Weihnachts-', 'dinner'];
+const untertitel = 'Ein Weihnachtsspiel für die ganze Familie'; // so steht der Titel auf dem Spielplan
 const zentrum = { name: 'Susis Weihnachtsküche', kurz: ['Susis', 'Weihnachtsküche'], emoji: '🏡', deko: '🥘' };
 const kartenName = 'Wichtel-Karte';
 const kartenNameMehrzahl = 'Wichtel-Karten';
 const listenName = 'Einkaufsliste';
 
 // Widmung auf dem Schachteldeckel (leer lassen = keine Widmung)
-const widmung = 'Für Susi – Frohe Weihnachten 2026! Dein Wichtel';
+const widmung = '';
 
 // Die 8 Orte im Uhrzeigersinn, beginnend oben links.
 // `mitte: true` = von hier führt ein Weg direkt in Susis Weihnachtsküche.
@@ -58,12 +58,12 @@ const figuren = [
   { id: 'gerhard', name: 'Gerhard', farbe: '#4527a0' },
   { id: 'lukas',   name: 'Lukas',   farbe: '#ad1457' },
   { id: 'astrid',  name: 'Astrid',  farbe: '#6d4c41' },
-  { id: 'marti',   name: 'Marti',   farbe: '#455a64' },
+  { id: 'marti',   name: 'Martin',  farbe: '#455a64' },
 ];
 
 // Kartenarten der Wichtel-Karten
 const kartenarten = {
-  glueck:      { name: 'Glück',       emoji: '🍀', farbe: '#e6a100', hell: '#fff8e1' },
+  glueck:      { name: 'Glück',       emoji: '🍀', farbe: '#b8800a', hell: '#fff8e1' },
   hoppla:      { name: 'Hoppla',      emoji: '❄️', farbe: '#1e88e5', hell: '#e3f2fd' },
   miteinander: { name: 'Miteinander', emoji: '🎶', farbe: '#2e7d32', hell: '#e8f5e9' },
   joker:       { name: 'Joker',       emoji: '🃏', farbe: '#8e24aa', hell: '#f3e5f5' },

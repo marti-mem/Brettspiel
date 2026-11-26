@@ -14,7 +14,7 @@ Der Dateiname muss genau so heißen:
 | Gerhard | `gerhard.jpg`                 |
 | Lukas   | `lukas.jpg`                   |
 | Astrid  | `astrid.jpg`                  |
-| Marti   | `marti.jpg`                   |
+| Martin  | `marti.jpg`                   |
 
 Erlaubt sind `.jpg`, `.jpeg`, `.png` und `.webp`. Danach `npm run build` ausführen.
 Fehlt ein Foto, wird ein farbiger Platzhalter gedruckt.

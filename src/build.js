@@ -43,15 +43,31 @@ function assetsRegistrieren() {
   const reg = (emoji, rel) => { const f = path.join(ROOT, 'assets', rel); if (emoji && fs.existsSync(f)) ASSET[emoji] = f; };
   D.orte.forEach(o => { reg(o.emoji, `orte/${o.id}.png`); reg(o.ding.emoji, `zutaten/${o.id}.png`); });
   reg(D.zentrum.emoji, 'zentrum.png');
+  const kd = path.join(ROOT, 'assets/karten');
+  if (fs.existsSync(kd)) fs.readdirSync(kd).filter(f => f.endsWith('.png')).forEach(f => {
+    const ch = String.fromCodePoint(...f.replace('.png', '').split('-').map(h => parseInt(h, 16)));
+    if (!ASSET[ch]) ASSET[ch] = path.join(kd, f);
+  });
 }
+const assetFuer = ch => ASSET[ch] || ASSET[ch.replace(/\uFE0F/g, '')];
 // Emoji in einem SVG (Koordinaten in mm), zentriert auf cx/cy
-const emoSvg = (ch, cx, cy, size, extra = '') => ASSET[ch]
-  ? `<image href="${assetDaten(ASSET[ch])}" x="${cx - size * 0.62}" y="${cy - size * 0.62}" width="${size * 1.24}" height="${size * 1.24}" ${extra}/>`
+const emoSvg = (ch, cx, cy, size, extra = '') => assetFuer(ch)
+  ? `<image href="${assetDaten(assetFuer(ch))}" x="${cx - size * 0.62}" y="${cy - size * 0.62}" width="${size * 1.24}" height="${size * 1.24}" ${extra}/>`
   : `<svg x="${cx - size / 2}" y="${cy - size / 2}" width="${size}" height="${size}" viewBox="0 0 36 36" ${extra}>${emojiInner(ch)}</svg>`;
 // Emoji in HTML
-const emoHtml = (ch, size, cls = '') => ASSET[ch]
-  ? `<img class="emo ${cls}" style="width:${size * 1.24}mm;height:${size * 1.24}mm;margin:${-size * 0.12}mm" src="${assetDaten(ASSET[ch])}">`
+const emoHtml = (ch, size, cls = '') => assetFuer(ch)
+  ? `<img class="emo ${cls}" style="width:${size * 1.24}mm;height:${size * 1.24}mm;margin:${-size * 0.12}mm" src="${assetDaten(assetFuer(ch))}">`
   : `<svg class="emo ${cls}" style="width:${size}mm;height:${size}mm" viewBox="0 0 36 36">${emojiInner(ch)}</svg>`;
+
+// ---------- Bild-Hilfen für das neue Design ----------
+function bildUri(rel) {
+  const f = path.join(ROOT, 'assets', rel);
+  if (!fs.existsSync(f)) return null;
+  return assetDaten(f).replace('data:image/png', rel.endsWith('.jpg') ? 'data:image/jpeg' : 'data:image/png');
+}
+const sternHtml = (mm, farbe = '#d4a537') => `<svg class="inl" style="width:${mm}mm;height:${mm}mm" viewBox="-10 -10 20 20"><path d="${stern5(0, 0.8, 9.5)}" fill="${farbe}"/></svg>`;
+const sternfeldHtml = mm => `<svg class="inl" style="width:${mm}mm;height:${mm}mm" viewBox="-10 -10 20 20"><circle r="9.4" fill="#c8102e" stroke="#d4a537" stroke-width="1.2"/><path d="${stern5(0, 0.6, 6)}" fill="#f0d48a"/></svg>`;
+const stechpalmeHtml = (mm, rot = 0) => `<svg style="width:${mm}mm;height:${mm * 0.6}mm" viewBox="-18 -13 36 16"><g transform="rotate(${rot})">${stechpalme(0, 0, 1, 0)}</g></svg>`;
 
 // ---------- gemeinsames CSS ----------
 const fontUrl = f => 'file://' + path.join(ROOT, 'node_modules/@fontsource', f);
@@ -60,6 +76,7 @@ const BASIS_CSS = `
 @font-face{font-family:Fredoka;font-weight:500;src:url(${fontUrl('fredoka/files/fredoka-latin-500-normal.woff2')})}
 @font-face{font-family:Fredoka;font-weight:600;src:url(${fontUrl('fredoka/files/fredoka-latin-600-normal.woff2')})}
 @font-face{font-family:Fredoka;font-weight:700;src:url(${fontUrl('fredoka/files/fredoka-latin-700-normal.woff2')})}
+@font-face{font-family:'DM Serif Display';font-style:italic;font-weight:400;src:url(${fontUrl('dm-serif-display/files/dm-serif-display-latin-400-italic.woff2')})}
 @font-face{font-family:'DM Serif Display';font-weight:400;src:url(${fontUrl('dm-serif-display/files/dm-serif-display-latin-400-normal.woff2')})}
 @font-face{font-family:Nunito;font-weight:400;src:url(${fontUrl('nunito/files/nunito-latin-400-normal.woff2')})}
 @font-face{font-family:Nunito;font-weight:700;src:url(${fontUrl('nunito/files/nunito-latin-700-normal.woff2')})}
@@ -184,11 +201,12 @@ function planInhalt() {
   const titelBlock = (cx, cy, rot) => `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}
     ${stechpalme(cx - 40, cy - 32, 0.85, -18)}${stechpalme(cx + 40, cy + 38, 0.85, 162)}
     <path d="${stern5(cx + 41, cy - 35, 4.2)}" fill="${P.gold}"/><path d="${stern4(cx - 43, cy + 33, 3.2)}" fill="${P.gold}"/>
-    <text x="${cx}" y="${cy - 17}" text-anchor="middle" font-family="${SERIF}" font-size="17" fill="${P.rot}">${esc(D.titelZeilen[0])}</text>
-    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-family="${SERIF}" font-size="15.5" fill="${P.tanne}">${esc(D.titelZeilen[1])}</text>
-    <text x="${cx}" y="${cy + 19}" text-anchor="middle" font-family="${SERIF}" font-size="15.5" fill="${P.tanne}">${esc(D.titelZeilen[2])}</text>
+    <text x="${cx}" y="${cy - 20}" text-anchor="middle" font-family="${SERIF}" font-size="15" fill="${P.rot}">${esc(D.titelZeilen[0])}</text>
+    <text x="${cx}" y="${cy - 8.5}" text-anchor="middle" font-family="${SERIF}" font-style="italic" font-size="10" fill="${P.gold}">${esc(D.titelZeilen[1])}</text>
+    <text x="${cx}" y="${cy + 6.5}" text-anchor="middle" font-family="${SERIF}" font-size="14" fill="${P.tanne}">${esc(D.titelZeilen[2])}</text>
+    <text x="${cx}" y="${cy + 20}" text-anchor="middle" font-family="${SERIF}" font-size="14" fill="${P.tanne}">${esc(D.titelZeilen[3])}</text>
     <line x1="${cx - 22}" y1="${cy + 25.5}" x2="${cx + 22}" y2="${cy + 25.5}" stroke="${P.gold}" stroke-width="0.6"/>
-    <text x="${cx}" y="${cy + 32}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="4.3" letter-spacing="0.25" fill="#7a6a4f">${esc((D.untertitel || '').toUpperCase())}</text>
+    <text x="${cx}" y="${cy + 32}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="3.6" letter-spacing="0.2" fill="#7a6a4f">${esc((D.untertitel || '').toUpperCase())}</text>
   </g>`;
 
   const kalender = (cx, cy) => {
@@ -394,22 +412,22 @@ const KARTEN_CSS = `
 .page{width:210mm;height:297mm}
 .raster{position:absolute;left:10.5mm;top:16.5mm;width:189mm;height:264mm;display:grid;grid-template-columns:repeat(3,${KW}mm);grid-template-rows:repeat(3,${KH}mm)}
 .karte{width:${KW}mm;height:${KH}mm;padding:2.5mm;position:relative;outline:0.15mm solid #ccc}
-.innen{width:100%;height:100%;border-radius:3.5mm;border:1.6mm solid var(--f);background:var(--h);display:flex;flex-direction:column;align-items:center;padding:2.4mm 3mm 2mm;text-align:center}
-.art{font-family:Fredoka;font-weight:600;font-size:3.3mm;color:#fff;background:var(--f);border-radius:3mm;padding:0.5mm 3mm;display:flex;align-items:center;gap:1.2mm;letter-spacing:0.2mm;text-transform:uppercase}
-.art .emo{width:3.6mm!important;height:3.6mm!important}
-.bild{margin:3.5mm 0 2.5mm;width:30mm;height:30mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.8mm var(--f) inset}
-.titel{font-family:Fredoka;font-weight:600;font-size:5.3mm;line-height:1.05;color:var(--f);margin-bottom:1.8mm}
-.text{font-size:3.55mm;line-height:1.28;font-weight:700;color:#333}
-.behalten{margin-top:auto;font-family:Fredoka;font-weight:600;font-size:3mm;color:#fff;background:var(--f);border-radius:2mm;padding:0.6mm 2.5mm}
-.fuss{margin-top:auto;font-size:2.3mm;color:#999;font-weight:700}
+.innen{width:100%;height:100%;border-radius:3.5mm;border:0.9mm solid #d4a537;background:linear-gradient(180deg,var(--h) 0,#fbf4e6 42%);display:flex;flex-direction:column;align-items:center;padding:2.6mm 3mm 2mm;text-align:center;box-shadow:inset 0 0 0 0.6mm #fffaf0,inset 0 0 0 0.85mm var(--f)}
+.art{font-family:Fredoka;font-weight:600;font-size:3mm;color:#fff;background:var(--f);border-radius:3mm;padding:0.5mm 3mm;display:flex;align-items:center;gap:1.2mm;letter-spacing:0.3mm;text-transform:uppercase;box-shadow:0 0 0 0.35mm #d4a537}
+.art .emo{width:3.4mm!important;height:3.4mm!important;margin:0!important}
+.bild{margin:3.2mm 0 2.4mm;width:30mm;height:30mm;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff 0,#eef2f8 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.9mm var(--f),0 0 0 1.5mm #d4a537}
+.titel{font-family:'DM Serif Display',serif;font-size:5.6mm;line-height:1.05;color:var(--f);margin-bottom:1.6mm}
+.text{font-size:3.45mm;line-height:1.28;font-weight:700;color:#3a3226}
+.behalten{margin-top:auto;font-family:Fredoka;font-weight:600;font-size:2.9mm;color:#fff;background:var(--f);border-radius:2mm;padding:0.6mm 2.5mm}
+.fuss{margin-top:auto;font-family:'DM Serif Display',serif;font-size:2.5mm;color:#a08a5f}
 .behalten+.fuss{margin-top:1mm}
 .linien{width:100%;margin-top:3mm;display:flex;flex-direction:column;gap:5.5mm}
 .linien div{border-bottom:0.25mm dashed #bbb;height:0}
-.rueck{width:100%;height:100%;border-radius:3.5mm;background:radial-gradient(circle at 50% 42%,#e53935 0,#8e0000 75%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.2mm solid #ffd54f}
-.rueck .kreis{width:34mm;height:34mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.4mm #ffd54f}
-.rueck .wort{font-family:Fredoka;font-weight:700;font-size:7mm;color:#fff;margin-top:4mm;letter-spacing:0.3mm}
-.rueck .klein{font-family:Fredoka;font-weight:500;font-size:3mm;color:#ffcdd2;margin-top:1mm}
-.funkeln{position:absolute}
+.rueck{width:100%;height:100%;border-radius:3.5mm;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0.9mm solid #d4a537;background-size:cover;background-position:center}
+.rueck .kreis{width:30mm;height:30mm;border-radius:50%;background:radial-gradient(circle at 45% 38%,#e8304a 0,#9e0c24 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.2mm #d4a537,0 0 0 2.2mm #fbf4e6,0 1.5mm 3mm rgba(20,40,80,.35)}
+.rueck .wort{font-family:'DM Serif Display',serif;font-size:7mm;color:#fff;margin-top:5mm;text-shadow:0 0.4mm 1.2mm rgba(15,30,70,.6)}
+.rueck .klein{font-family:'DM Serif Display',serif;font-style:italic;font-size:3mm;color:#fff;margin-top:0.8mm;text-shadow:0 0.3mm 1mm rgba(15,30,70,.6)}
+.inl{display:inline-block;vertical-align:-0.6mm}
 `;
 
 function kartenVorderseite(k) {
@@ -432,10 +450,9 @@ function leereKarte() {
   </div></div>`;
 }
 function kartenRueckseite() {
-  const funken = [[8, 10, 5, '❄️'], [46, 14, 4, '✨'], [12, 66, 4, '✨'], [44, 70, 6, '❄️'], [28, 6, 3, '✨'], [6, 40, 3, '❄️'], [51, 42, 3.5, '✨']]
-    .map(([x, y, s, e]) => `<div class="funkeln" style="left:${x}mm;top:${y}mm">${emoHtml(e, s)}</div>`).join('');
-  return `<div class="karte"><div class="rueck">${funken}
-    <div class="kreis">${emoHtml('🧝', 25)}</div>
+  const bg = bildUri('hintergrund.jpg');
+  return `<div class="karte"><div class="rueck" style="${bg ? `background-image:url(${bg})` : 'background:#3a5a9a'}">
+    <div class="kreis"><svg style="width:21mm;height:21mm" viewBox="-10 -10 20 20"><path d="${stern5(0, 0.8, 9.3)}" fill="#f0d48a"/></svg></div>
     <div class="wort">${esc(D.kartenName)}</div>
     <div class="klein">${esc(D.titel)}</div>
   </div></div>`;
@@ -466,15 +483,15 @@ function suchlistenDatei() {
   .page{width:210mm;height:297mm}
   .raster{position:absolute;left:10mm;top:20mm;display:grid;grid-template-columns:repeat(2,${SL}mm);grid-template-rows:repeat(2,${SL}mm);gap:0}
   .liste{width:${SL}mm;height:${SL}mm;padding:2mm;outline:0.15mm solid #ccc}
-  .rahmen{width:100%;height:100%;border-radius:4mm;background:#fffaf5;border:1.4mm solid #c62828;display:flex;flex-direction:column;align-items:center;padding:2mm 3mm}
-  .kopf{display:flex;align-items:center;gap:2mm;font-family:Fredoka;font-weight:700;font-size:6mm;color:#b71c1c;height:9mm}
-  .nr{font-family:Fredoka;font-weight:500;font-size:3mm;color:#fff;background:#2e7d32;border-radius:2mm;padding:0.3mm 1.8mm;margin-left:1mm}
+  .rahmen{width:100%;height:100%;border-radius:4mm;background:#fbf4e6;border:1mm solid #d4a537;box-shadow:inset 0 0 0 0.7mm #fffaf0,inset 0 0 0 0.95mm #c8102e;display:flex;flex-direction:column;align-items:center;padding:2mm 3mm}
+  .kopf{display:flex;align-items:center;gap:2mm;font-family:'DM Serif Display',serif;font-size:7mm;color:#c8102e;height:9mm}
+  .nr{font-family:Fredoka;font-weight:500;font-size:3mm;color:#f0d48a;background:#1f6b4a;border-radius:2mm;padding:0.3mm 1.8mm;margin-left:1mm;font-family:Fredoka;font-weight:600}
   .felder{display:grid;grid-template-columns:repeat(2,32mm);grid-template-rows:repeat(2,32mm);gap:3mm;margin-top:1.5mm}
-  .slot{border:0.6mm dashed var(--f);border-radius:2.5mm;background:var(--h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6mm}
+  .slot{border:0.6mm dashed var(--f);border-radius:2.5mm;background:#fffdf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6mm}
   .slot .emo{opacity:0.9}
   .slot .n{font-family:Fredoka;font-weight:600;font-size:3.6mm;color:#333;line-height:1}
   .slot .o{font-size:2.7mm;font-weight:800;color:var(--f);display:flex;align-items:center;gap:0.6mm;line-height:1}
-  .tipp{margin-top:auto;font-size:2.7mm;font-weight:700;color:#2e7d32;display:flex;align-items:center;gap:1mm}
+  .tipp{margin-top:auto;font-size:2.7mm;font-weight:700;color:#1f6b4a;display:flex;align-items:center;gap:1mm}
   `;
   const tint = (hex, a) => {
     const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
@@ -482,12 +499,12 @@ function suchlistenDatei() {
     return `rgb(${m(r)},${m(g)},${m(b)})`;
   };
   const karte = (l, i) => `<div class="liste"><div class="rahmen">
-    <div class="kopf">${emoHtml('📝', 7)}${esc(D.listenName)}<span class="nr">Nr. ${i + 1}</span></div>
+    <div class="kopf">${stechpalmeHtml(8)}${esc(D.listenName)}<span class="nr">Nr. ${i + 1}</span></div>
     <div class="felder">${l.map(id => {
       const o = ortById[id];
       return `<div class="slot" style="--f:${o.farbe};--h:${tint(o.farbe, 0.12)}">${emoHtml(o.ding.emoji, 14)}<div class="n">${esc(o.ding.name)}</div><div class="o">${emoHtml(o.emoji, 3.2)}${esc(o.name)}</div></div>`;
     }).join('')}</div>
-    <div class="tipp">Alles gefunden? Dann schnell zurück zu Susi! ${emoHtml(D.zentrum.emoji, 3.4)}</div>
+    <div class="tipp">${sternHtml(3)} Alles gefunden? Dann schnell zurück zu Susi in die Küche! ${sternHtml(3)}</div>
   </div></div>`;
   let body = '';
   const seiten = Math.ceil(D.suchlisten.length / 4);
@@ -504,15 +521,15 @@ function suchlistenDatei() {
 // ======================================================================
 function gegenstaendeDatei(tint) {
   const P = 30, cols = 6, rows = 9, x0 = 15, y0 = 13;
-  const css = `@page{size:A4;margin:0}.page{width:210mm;height:297mm}
+  const css = `@page{size:A4;margin:0}.page{width:210mm;height:297mm}.inl{display:block}
   .raster{position:absolute;left:${x0}mm;top:${y0}mm;display:grid;grid-template-columns:repeat(${cols},${P}mm);grid-template-rows:repeat(${rows},${P}mm)}
-  .chip{width:${P}mm;height:${P}mm;background:var(--h);display:flex;flex-direction:column;align-items:center;justify-content:center;outline:0.15mm solid #bbb;position:relative}
+  .chip{width:${P}mm;height:${P}mm;background:radial-gradient(circle at 50% 40%,#fffdf8 0,#f3e6cc 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;outline:0.15mm solid #bbb;position:relative}
   .chip::before{content:'';position:absolute;inset:1.6mm;border:0.9mm solid var(--f);border-radius:2.5mm}
   .chip .n{font-family:Fredoka;font-weight:600;font-size:3.1mm;color:var(--f);margin-top:0.6mm;line-height:1}`;
   const chips = [];
   D.orte.forEach(o => { for (let i = 0; i < D.exemplareProDing; i++) chips.push(`<div class="chip" style="--f:${o.farbe};--h:${tint(o.farbe, 0.15)}">${emoHtml(o.ding.emoji, 16)}<div class="n">${esc(o.ding.name)}</div></div>`); });
   const anzahlDinge = chips.length;
-  chips.push(`<div class="chip" style="--f:#b8860b;--h:#fff8e1">${emoHtml('🌟', 16)}<div class="n">Kalender</div></div>`);
+  chips.push(`<div class="chip" style="--f:#c8102e;--h:#fff8e1">${sternfeldHtml(17)}<div class="n">Kalender</div></div>`);
   while (chips.length < cols * rows) chips.push(`<div class="chip" style="--f:#9e9e9e;--h:#fafafa"><div class="n" style="margin-top:17mm">Ersatz</div></div>`);
   const xs = Array.from({ length: cols - 1 }, (_, i) => x0 + (i + 1) * P), ys = Array.from({ length: rows - 1 }, (_, i) => y0 + (i + 1) * P);
   const body = `<div class="page"><div class="seitenhinweis" style="left:15mm;top:3.5mm;font-size:2.8mm">Gegenstände · ${anzahlDinge} Plättchen (je ${D.exemplareProDing}×) + Kalender-Stern + Ersatz zum Bemalen · auf Karton drucken, mit Lineal/Papierschneider schneiden</div>
@@ -602,29 +619,38 @@ function regelDatei() {
   const ka = D.kartenarten;
   const artZeile = (k, t) => `<div class="kart" style="--f:${ka[k].farbe};--h:${ka[k].hell}"><b>${emoHtml(ka[k].emoji, 4)}${ka[k].name}</b><span>${t}</span></div>`;
   const css = `@page{size:A4;margin:0}
-  .page{width:210mm;height:297mm;padding:13mm 15mm 12mm;background:#fffdf7}
-  h1{font-family:Fredoka;font-weight:700;font-size:13mm;line-height:1;color:#c62828;display:flex;align-items:center;gap:3mm}
-  .unter{font-family:Fredoka;font-weight:500;font-size:4.2mm;color:#2e7d32;margin:2mm 0 4mm;display:flex;gap:5mm;flex-wrap:wrap}
-  .unter span{display:flex;align-items:center;gap:1.2mm}
-  h2{font-family:Fredoka;font-weight:600;font-size:5.6mm;color:#1b5e20;margin:3.8mm 0 1.4mm;display:flex;align-items:center;gap:2mm;border-bottom:0.5mm solid #c8e6c9;padding-bottom:0.8mm}
-  p,li{font-size:3.45mm;line-height:1.38}
+  .page{width:210mm;height:297mm;padding:12mm 15mm 12mm;background:#fbf4e6}
+  .page::before{content:'';position:absolute;inset:5mm;border:0.5mm solid #d4a537;border-radius:5mm;pointer-events:none}
+  .page::after{content:'';position:absolute;inset:6.2mm;border:0.2mm solid #e7cf8f;border-radius:4.2mm;pointer-events:none}
+  .kopf{display:grid;grid-template-columns:36mm 1fr;gap:5mm;align-items:center;border-radius:4mm;padding:3mm 4mm;background-size:cover;background-position:center;position:relative;box-shadow:0 0 0 0.5mm #d4a537}
+  .kopf .susi{width:36mm;height:36mm;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 1.2mm #d4a537,0 0 0 2.2mm #fbf4e6,0 1mm 3mm rgba(20,40,80,.35)}
+  .kopf .karte{background:rgba(251,244,230,.94);border-radius:3mm;padding:2.8mm 4mm;box-shadow:0 0 0 0.4mm #d4a537}
+  h1{font-family:'DM Serif Display',serif;font-weight:400;line-height:0.95;color:#1f6b4a;font-size:10.5mm}
+  h1 .a{display:block;color:#c8102e;font-size:8mm}
+  h1 .b{font-style:italic;color:#b8862b;font-size:7mm}
+  .unter{font-family:Fredoka;font-weight:500;font-size:3.5mm;color:#1f6b4a;margin:1.6mm 0 1.4mm;display:flex;gap:4mm;flex-wrap:wrap}
+  .unter span{display:flex;align-items:center;gap:1mm}
+  .story{font-size:3.3mm;line-height:1.38;color:#3a3226}
+  h2{font-family:'DM Serif Display',serif;font-weight:400;font-size:6.4mm;color:#1f6b4a;margin:3.6mm 0 1.3mm;display:flex;align-items:center;gap:2mm;border-bottom:0.35mm solid #d4a537;padding-bottom:0.6mm}
+  p,li{font-size:3.45mm;line-height:1.38;color:#3a3226}
   ul,ol{padding-left:5.5mm}
   li{margin:0.6mm 0}
-  b{font-weight:800}
-  .story{background:#ffebee;border-radius:4mm;padding:3mm 4mm;font-size:3.8mm;line-height:1.45;border-left:1.5mm solid #c62828}
+  li::marker{color:#c8102e;font-weight:800}
+  b{font-weight:800;color:#2a241b}
   .zwei{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
-  .oc{display:inline-flex;align-items:center;gap:0.8mm;font-size:3.1mm;font-weight:700;border:0.4mm solid var(--f);color:#333;border-radius:2mm;padding:0.4mm 1.6mm;margin:0.6mm 0.6mm 0 0}
+  .oc{display:inline-flex;align-items:center;gap:0.8mm;font-size:3.1mm;font-weight:700;background:#fffdf8;border:0.4mm solid var(--f);color:#333;border-radius:2mm;padding:0.3mm 1.6mm;margin:0.7mm 0.6mm 0 0}
   .oc .emo{display:inline-block}
-  .kart{display:grid;grid-template-columns:30mm 1fr;align-items:center;background:var(--h);border-left:1.4mm solid var(--f);border-radius:1.5mm;padding:1.2mm 2.5mm;margin:1.3mm 0;font-size:3.4mm;line-height:1.35}
-  .kart>b{display:flex;align-items:center;gap:1.2mm;color:var(--f);font-family:Fredoka;font-weight:600;font-size:4mm}
-  .box{background:#e8f5e9;border-radius:4mm;padding:2.5mm 4mm;margin-top:2mm}
-  .box.lila{background:#f3e5f5}
+  .kart{display:grid;grid-template-columns:36mm 1fr;align-items:center;background:#fffdf8;border:0.3mm solid #e7cf8f;border-left:1.4mm solid var(--f);border-radius:1.5mm;padding:1.2mm 2.5mm;margin:1.3mm 0;font-size:3.4mm;line-height:1.35}
+  .kart>b{display:flex;align-items:center;gap:1.2mm;color:var(--f);font-family:'DM Serif Display',serif;font-weight:400;font-size:4.6mm}
+  .box{background:#fffdf8;border:0.35mm solid #e7cf8f;border-radius:3mm;padding:2.3mm 4mm;margin-top:2mm}
   .s1 p,.s1 li{font-size:3.35mm;line-height:1.34}
-  .s1 h2{margin:3mm 0 1.2mm}
-  .box.rot{background:#fff8e1;border:0.4mm solid #e6a100}
-  .box.blau{background:#e3f2fd}
+  .s1 h2{margin:2.4mm 0 1mm;font-size:6mm}
+  .s1 li{margin:0.35mm 0}
+  .box.rot{background:#fff6f2;border-color:#e9a3a3}
+  .box.blau{background:#eef3fb;border-color:#b9cbe8}
   .inl{display:inline-block;vertical-align:-0.8mm}
-  .fuss{position:absolute;bottom:7mm;left:15mm;right:15mm;font-size:2.4mm;color:#aaa;display:flex;justify-content:space-between}
+  .fuss{position:absolute;bottom:8mm;left:15mm;right:15mm;font-family:'DM Serif Display',serif;font-size:2.7mm;color:#a08a5f;display:flex;justify-content:space-between}
+  .schluss{margin-top:3mm;display:flex;align-items:center;justify-content:center;gap:3mm;font-family:'DM Serif Display',serif;font-size:6.5mm;color:#c8102e}
   `;
   const i = (ch, s = 4) => emoHtml(ch, s, 'inl');
   const abzweig = D.orte.filter(o => o.mitte).map(o => o.name);
@@ -632,16 +658,20 @@ function regelDatei() {
   const KN = D.kartenName, KNM = D.kartenNameMehrzahl, LN = D.listenName, Z = D.zentrum.name;
   const kartenZahl = D.jakobKarten.reduce((a, k) => a + k.anzahl, 0);
   const seite1 = `<div class="page s1">
-    <h1>${emoHtml('🎄', 12)}${esc(D.titel)}</h1>
-    <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Personen · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
-    <div class="story">Es ist der 24. Dezember! Susi ist für ihre Kochpartys berühmt, und heute hat sie sich etwas ganz Besonderes vorgenommen:
-    <b>das beste Weihnachtsessen der Welt</b> für Jakob und die ganze Familie. Doch oje, in der Küche fehlt noch so einiges: Erdäpfel für den Erdäpfelsalat, Maroni, Eier, Vanillekipferl, Kinderpunsch und ihr Geheimrezept …
-    Zum Glück helfen alle beim Einkaufen mit!
-    <b>Wer zuerst alle Zutaten von seiner ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt!</b></div>
+    <div class="kopf" style="background-image:url(${bildUri('hintergrund.jpg') || ''})">
+      <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
+      <div class="karte">
+        <h1><span class="a">Susis <span class="b">perfektes</span></span>Weihnachtsdinner</h1>
+        <div class="unter"><span>${sternHtml(3.2)} 2–6 Personen · bis 10 im Team</span><span>${sternHtml(3.2)} ab 7 Jahren</span><span>${sternHtml(3.2)} ca. 30–45 Minuten</span></div>
+        <div class="story">Es ist der 24. Dezember! Susi ist für ihre Kochpartys berühmt, und heute hat sie sich etwas ganz Besonderes vorgenommen:
+        <b>das perfekte Weihnachtsdinner</b> für Jakob und die ganze Familie. Doch oje, in der Küche fehlt noch so einiges: Erdäpfel für den Erdäpfelsalat, Maroni, Eier, Vanillekipferl, Kinderpunsch und ihr Geheimrezept …
+        Zum Glück helfen alle beim Einkaufen mit! <b>Wer zuerst alle Zutaten von der eigenen ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt!</b></div>
+      </div>
+    </div>
 
     <div class="zwei">
     <div>
-      <h2>${emoHtml('📦', 6)}Inhalt</h2>
+      <h2>${sternHtml(4.6)}Inhalt</h2>
       <ul>
         <li>1 Spielplan</li>
         <li>10 Spielfiguren</li>
@@ -652,9 +682,9 @@ function regelDatei() {
       </ul>
     </div>
     <div>
-      <h2>${emoHtml('🧩', 6)}Vorbereitung</h2>
+      <h2>${sternHtml(4.6)}Vorbereitung</h2>
       <ol>
-        <li>Alle suchen sich eine <b>Figur</b> aus und stellt sie in <b>${Z}</b> (Mitte).</li>
+        <li>Alle suchen sich eine <b>Figur</b> aus und stellen sie in <b>${Z}</b> (Mitte).</li>
         <li>Die <b>Gegenstände</b> nach Sorten neben den Plan legen (Vorrat).</li>
         <li>Die <b>${LN}n</b> mischen. Alle ziehen eine und legen sie <b>offen</b> vor sich.</li>
         <li>Die <b>${KNM}</b> mischen und verdeckt bereitlegen.</li>
@@ -663,11 +693,11 @@ function regelDatei() {
     </div>
     </div>
 
-    <h2>${emoHtml('🗺️', 6)}Wo gibt es was?</h2>
+    <h2>${sternHtml(4.6)}Wo gibt es was?</h2>
     <p>An jedem Ort im Weihnachtsdorf gibt es eine Sache. Das kleine Bild am Ort zeigt, welche:</p>
     <div>${ortChips}</div>
 
-    <h2>${emoHtml('🎲', 6)}So spielst du</h2>
+    <h2>${sternHtml(4.6)}So spielst du</h2>
     <ol>
       <li><b>Würfle</b> und zieh genau so viele Felder – nicht mehr und nicht weniger.</li>
       <li><b>Die Richtung darfst du jedes Mal selbst wählen</b>, vorwärts oder rückwärts. Nur während eines Zuges darfst du nicht umdrehen.</li>
@@ -677,28 +707,28 @@ function regelDatei() {
     </ol>
     <div class="box blau" style="margin-top:1.5mm;padding:1.8mm 4mm"><p><b>Beispiel:</b> Du stehst in ${Z} und würfelst eine <b>3</b>. Damit kommst du genau zu ${abzweig.map(n => '<b>' + n + '</b>').join(', ').replace(/, ([^,]*)$/, ' oder $1')}. Du suchst dir aus, wohin.</p></div>
 
-    <h2>${emoHtml('📍', 6)}Wo bist du gelandet?</h2>
+    <h2>${sternHtml(4.6)}Wo bist du gelandet?</h2>
     <ul>
       <li><b>Genau auf einem Ort:</b> Eine Zutat bekommst du nur, wenn du <b>genau</b> auf ihrem Ort landest – vorbeiziehen reicht nicht. Steht die Sache dieses Ortes auf deiner ${LN} und hast du sie noch nicht? Dann nimm sie dir aus dem Vorrat und leg sie auf deine Liste. Das gilt auch, wenn dich eine Karte dorthin schickt.</li>
-      <li><b>Auf einem Sternfeld</b> ${i('⭐', 3.6)}: Zieh eine <b>${KN}</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
+      <li><b>Auf einem Sternfeld</b> ${sternfeldHtml(4)}: Zieh eine <b>${KN}</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
       <li><b>Auf einem leeren Feld:</b> Es passiert nichts, und die nächste Person ist dran.</li>
     </ul>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel</span><span>Seite 1/2</span></div>
   </div>`;
 
   const seite2 = `<div class="page">
-    <h2 style="margin-top:0">${emoHtml('🧝', 6)}Die ${KNM}</h2>
+    <h2 style="margin-top:0">${sternHtml(4.6)}Die ${KNM}</h2>
     ${artZeile('glueck', 'Gute Nachrichten! Du kommst schneller voran.')}
     ${artZeile('hoppla', 'Susi oder Jakob haben eine Idee, und du musst mit. Manchmal hilft das sogar!')}
     ${artZeile('miteinander', 'Jetzt machen alle mit: lachen, raten, singen. Oft dürfen mehrere ziehen.')}
     ${artZeile('joker', '<b>Behalte diese Karte</b> offen vor dir und spiel sie, wann du willst. Du darfst höchstens <b>2 Joker</b> haben. Nach dem Ausspielen kommt sie unter den Stapel.')}
     <p style="margin-top:1.2mm">Wichtig: Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
 
-    <h2>${emoHtml('🏆', 6)}Wer gewinnt?</h2>
+    <h2>${sternHtml(4.6)}Wer gewinnt?</h2>
     <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes in <b>${Z}</b> ankommt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt.
     Die Küche musst du <b>genau</b> treffen! Würfelst du zu viel, ziehst du durch die Küche hindurch und auf einem anderen Weg wieder hinaus. Dann versuchst du es im nächsten Zug noch einmal. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
 
-    <h2>${emoHtml('👫', 6)}Team-Spiel für 7 bis 10 Personen</h2>
+    <h2>${sternHtml(4.6)}Team-Spiel für 7 bis 10 Personen</h2>
     <div class="box blau">
     <ul>
       <li>Bildet <b>Zweier-Teams</b> (bei ungerader Zahl ein Dreier-Team). Jede Person hat ihre eigene Figur, jedes Team <b>eine gemeinsame ${LN}</b>. Die Teams sind reihum dran, im Team wird abwechselnd gewürfelt.</li>
@@ -708,7 +738,7 @@ function regelDatei() {
     </ul>
     </div>
 
-    <h2>${emoHtml('🌟', 6)}Gemeinsam bis Heiligabend</h2>
+    <h2>${sternHtml(4.6)}Gemeinsam bis Heiligabend</h2>
     <div class="box rot">
       <p>In dieser Variante spielen <b>alle zusammen gegen die Zeit</b>. Legt den <b>Kalender-Stern</b> auf ein Türchen des Adventskalenders auf dem Spielplan:
       <b>1</b> (leicht), <b>8</b> (mittel) oder <b>12</b> (schwer).</p>
@@ -720,14 +750,14 @@ function regelDatei() {
       </ul>
     </div>
 
-    <h2>${emoHtml('⚙️', 6)}Noch mehr Varianten</h2>
+    <h2>${sternHtml(4.6)}Noch mehr Varianten</h2>
     <div class="box">
       <p><b>${i('🐣')} Für die Kleinsten:</b> Eine Sache darf man schon einsammeln, wenn man an ihrem Ort nur <b>vorbeizieht</b>, und die Küche muss nicht genau getroffen werden.</p>
       <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Sachen</b>. Deckt vorher eine beliebige auf der Liste ab.</p>
       <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>, und alle dürfen nur <b>1 Joker</b> haben.</p>
     </div>
-    <p style="margin-top:2.5mm;text-align:center;font-family:Fredoka;font-size:5mm;color:#c62828">Frohe Weihnachten und viel Spaß! ${i('🎄', 5)}${i('🎁', 5)}${i('⭐', 5)}</p>
-    <div class="fuss"><span>${esc(D.titel)} · Spielregel · Bilder: Twemoji (CC-BY 4.0)</span><span>Seite 2/2</span></div>
+    <div class="schluss">${stechpalmeHtml(11)}Frohe Weihnachten und viel Spaß!${stechpalmeHtml(11)}</div>
+    <div class="fuss"><span>${esc(D.titel)} · Spielregel · Illustrationen KI-generiert, Symbole: Twemoji (CC-BY 4.0)</span><span>Seite 2/2</span></div>
   </div>`;
   return { name: '02_Spielregel_A4', html: htmlDoc('Spielregel', css, seite1 + seite2) };
 }
@@ -737,24 +767,32 @@ function regelDatei() {
 // ======================================================================
 function deckelDatei() {
   const css = `@page{size:A4 landscape;margin:0}
-  .page{width:297mm;height:210mm;background:radial-gradient(circle at 50% 42%,#d32f2f 0,#8e0000 85%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-  .rahmen{position:absolute;inset:6mm;border:1.6mm solid #ffd54f;border-radius:8mm}
-  .rahmen2{position:absolute;inset:9mm;border:0.5mm dashed #ffe082;border-radius:6mm}
-  .t1{font-family:Fredoka;font-weight:700;font-size:24mm;color:#fff;line-height:1}
-  .t2{font-family:Fredoka;font-weight:700;font-size:26mm;color:#ffd54f;line-height:1.05;display:flex;align-items:center;gap:4mm}
-  .reihe{display:flex;gap:5mm;margin:8mm 0 6mm}
-  .reihe div{width:22mm;height:22mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5mm var(--f),0 0 0 2.6mm #fff}
-  .info{font-family:Fredoka;font-weight:500;font-size:6mm;color:#fff}
-  .widmung{font-family:Fredoka;font-weight:500;font-size:5.5mm;color:#ffe082;margin-top:5mm}
-  .unter{font-family:Fredoka;font-weight:500;font-size:8mm;color:#fff;margin-top:2mm}
-  .ecke{position:absolute}`;
-  const deko = [['🎄', 16, 14, 18], ['🎅', 262, 16, 16], ['⛄', 18, 172, 16], ['🦌', 262, 172, 16], ['❄️', 52, 30, 7], ['❄️', 236, 158, 7], ['✨', 60, 160, 7], ['✨', 228, 34, 7], ['⭐', 30, 98, 6], ['⭐', 262, 100, 6]]
-    .map(([e, x, y, s]) => `<div class="ecke" style="left:${x}mm;top:${y}mm">${emoHtml(e, s)}</div>`).join('');
-  const body = `<div class="page"><div class="rahmen"></div><div class="rahmen2"></div>${deko}
-    <div class="t1">Susis</div><div class="t2">Weihnachtsdinner</div><div class="unter">${esc(D.untertitel)}</div>
-    <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 14)}</div>`).join('')}</div>
-    <div class="info">2–6 Personen · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
-    ${D.widmung ? `<div class="widmung">${esc(D.widmung)}</div>` : ''}
+  .page{width:297mm;height:210mm;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+  .rahmen{position:absolute;inset:6mm;border:1.2mm solid #d4a537;border-radius:8mm}
+  .rahmen2{position:absolute;inset:8.5mm;border:0.35mm solid #f0d48a;border-radius:6mm}
+  .inhalt{display:grid;grid-template-columns:84mm 1fr;gap:9mm;align-items:center;width:262mm}
+  .susi{width:84mm;height:84mm;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 2mm #d4a537,0 0 0 4mm #fbf4e6,0 0 0 4.6mm #d4a537,0 3mm 8mm rgba(20,40,80,.4)}
+  .karte{background:rgba(251,244,230,.95);border-radius:6mm;padding:7mm 7mm;box-shadow:0 0 0 0.7mm #d4a537,0 2mm 6mm rgba(20,40,80,.3);text-align:center}
+  .t1{font-family:'DM Serif Display',serif;font-size:14mm;color:#c8102e;line-height:1}
+  .t1 i{font-style:italic;color:#b8862b;font-size:12mm}
+  .t2{font-family:'DM Serif Display',serif;font-size:16.5mm;color:#1f6b4a;line-height:1.05}
+  .unter{font-family:'DM Serif Display',serif;font-style:italic;font-size:6mm;color:#7a6a4f;margin-top:1.5mm}
+  .reihe{display:flex;gap:2.5mm;justify-content:center;margin:6mm 0 5mm}
+  .reihe div{width:15mm;height:15mm;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff 0,#eef2f8 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.8mm var(--f),0 0 0 1.4mm #d4a537}
+  .info{font-family:Fredoka;font-weight:500;font-size:4.6mm;color:#1f6b4a}
+  .widmung{font-family:'DM Serif Display',serif;font-style:italic;font-size:5.5mm;color:#c8102e;margin-top:3mm}
+  .emo{display:block}`;
+  const body = `<div class="page" style="background-image:url(${bildUri('hintergrund.jpg') || ''})"><div class="rahmen"></div><div class="rahmen2"></div>
+    <div class="inhalt">
+      <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
+      <div class="karte">
+        <div class="t1">Susis <i>perfektes</i></div><div class="t2">Weihnachtsdinner</div>
+        <div class="unter">${esc(D.untertitel)}</div>
+        <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 10)}</div>`).join('')}</div>
+        <div class="info">2–6 Personen · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
+        ${D.widmung ? `<div class="widmung">${esc(D.widmung)}</div>` : ''}
+      </div>
+    </div>
   </div>`;
   return { name: '07_Schachteldeckel_A4', html: htmlDoc('Schachteldeckel', css, body) };
 }
