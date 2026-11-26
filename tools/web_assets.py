@@ -30,6 +30,7 @@ out['figuren'] = {f[:-4]: klein(os.path.join(ROOT, 'figuren', f), 180, 'JPEG')
 out['orte'] = {f[:-4]: klein(os.path.join(A, 'orte', f), 220) for f in os.listdir(os.path.join(A, 'orte'))}
 out['zutaten'] = {f[:-4]: klein(os.path.join(A, 'zutaten', f), 160) for f in os.listdir(os.path.join(A, 'zutaten'))}
 out['karten'] = {f[:-4]: klein(os.path.join(A, 'karten', f), 200) for f in os.listdir(os.path.join(A, 'karten'))}
+out['winter'] = klein(os.path.join(A, 'hintergrund.jpg'), 1400, 'JPEG')
 out['susi'] = klein(os.path.join(A, 'susi_mitte.jpg'), 420, 'JPEG')
 json.dump(out, open(sys.argv[1], 'w'))
 print('Bilder:', sum(len(v) if isinstance(v, dict) else 1 for v in out.values()), 'Größe:', round(os.path.getsize(sys.argv[1]) / 1e6, 2), 'MB')

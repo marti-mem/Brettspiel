@@ -645,11 +645,21 @@ function regelDatei() {
   .box{background:#fffdf8;border:0.35mm solid #e7cf8f;border-radius:3mm;padding:2.3mm 4mm;margin-top:2mm}
   .s1 p,.s1 li{font-size:3.35mm;line-height:1.34}
   .s1 h2{margin:2.4mm 0 1mm;font-size:6mm}
+  .s2 h2{margin:2.8mm 0 1.1mm;font-size:6mm}
+  .s2 p,.s2 li{font-size:3.4mm;line-height:1.34}
+  .s2 li{margin:0.4mm 0}
+  .s2 .box{padding:2mm 4mm;margin-top:1.5mm}
   .s1 li{margin:0.35mm 0}
   .box.rot{background:#fff6f2;border-color:#e9a3a3}
   .box.blau{background:#eef3fb;border-color:#b9cbe8}
   .inl{display:inline-block;vertical-align:-0.8mm}
   .fuss{position:absolute;bottom:8mm;left:15mm;right:15mm;font-family:'DM Serif Display',serif;font-size:2.7mm;color:#a08a5f;display:flex;justify-content:space-between}
+  .online{display:flex;align-items:center;gap:5mm;margin-top:3mm;background:#fffdf8;border:0.35mm solid #e7cf8f;border-radius:3mm;padding:2.5mm 4mm}
+  .online .qr{background:#fff;padding:1.8mm;border-radius:2mm;box-shadow:0 0 0 0.5mm #d4a537}
+  .online .ot{font-family:'DM Serif Display',serif;font-size:5.6mm;color:#c8102e}
+  .online p{margin:0.6mm 0 0}
+  .online .gruss{font-family:'DM Serif Display',serif;font-size:4.6mm;color:#c8102e;text-align:center;line-height:1.15}
+  .online .url{font-family:Fredoka;font-weight:600;color:#1f6b4a;font-size:3.2mm}
   .schluss{margin-top:3mm;display:flex;align-items:center;justify-content:center;gap:3mm;font-family:'DM Serif Display',serif;font-size:6.5mm;color:#c8102e}
   `;
   const i = (ch, s = 4) => emoHtml(ch, s, 'inl');
@@ -716,7 +726,7 @@ function regelDatei() {
     <div class="fuss"><span>${esc(D.titel)} · Spielregel</span><span>Seite 1/2</span></div>
   </div>`;
 
-  const seite2 = `<div class="page">
+  const seite2 = `<div class="page s2">
     <h2 style="margin-top:0">${sternHtml(4.6)}Die ${KNM}</h2>
     ${artZeile('glueck', 'Gute Nachrichten! Du kommst schneller voran.')}
     ${artZeile('hoppla', 'Susi oder Jakob haben eine Idee, und du musst mit. Manchmal hilft das sogar!')}
@@ -756,7 +766,11 @@ function regelDatei() {
       <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Sachen</b>. Deckt vorher eine beliebige auf der Liste ab.</p>
       <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>, und alle dürfen nur <b>1 Joker</b> haben.</p>
     </div>
-    <div class="schluss">${stechpalmeHtml(11)}Frohe Weihnachten und viel Spaß!${stechpalmeHtml(11)}</div>
+    ${QR_SVG ? `<div class="online"><div class="qr">${qrHtml(19)}</div><div style="flex:1"><div class="ot">Online spielen</div>
+      <p>QR-Code scannen und die digitale Version im Browser spielen – mit allen Figuren, Karten und dem Spielbrett.</p>
+      <p class="url">${esc(D.onlineLink.replace('https://', ''))}</p></div>
+      <div class="gruss">${stechpalmeHtml(10)}<br>Frohe Weihnachten<br>und viel Spaß!</div></div>`
+    : `<div class="schluss">${stechpalmeHtml(11)}Frohe Weihnachten und viel Spaß!${stechpalmeHtml(11)}</div>`}
     <div class="fuss"><span>${esc(D.titel)} · Spielregel · Illustrationen KI-generiert, Symbole: Twemoji (CC-BY 4.0)</span><span>Seite 2/2</span></div>
   </div>`;
   return { name: '02_Spielregel_A4', html: htmlDoc('Spielregel', css, seite1 + seite2) };
@@ -781,8 +795,12 @@ function deckelDatei() {
   .reihe div{width:15mm;height:15mm;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff 0,#eef2f8 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.8mm var(--f),0 0 0 1.4mm #d4a537}
   .info{font-family:Fredoka;font-weight:500;font-size:4.6mm;color:#1f6b4a}
   .widmung{font-family:'DM Serif Display',serif;font-style:italic;font-size:5.5mm;color:#c8102e;margin-top:3mm}
-  .emo{display:block}`;
+  .emo{display:block}
+  .qrbox{position:absolute;right:14mm;bottom:14mm;background:rgba(251,244,230,.96);border-radius:4mm;padding:2.5mm;text-align:center;box-shadow:0 0 0 0.6mm #d4a537,0 1.5mm 4mm rgba(20,40,80,.3)}
+  .qrbox .q{background:#fff;padding:1.5mm;border-radius:1.5mm}
+  .qrbox span{display:block;font-family:Fredoka;font-weight:600;font-size:3mm;color:#1f6b4a;margin-top:1.2mm}`;
   const body = `<div class="page" style="background-image:url(${bildUri('hintergrund.jpg') || ''})"><div class="rahmen"></div><div class="rahmen2"></div>
+    ${QR_SVG ? `<div class="qrbox"><div class="q">${qrHtml(20)}</div><span>Online spielen</span></div>` : ''}
     <div class="inhalt">
       <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
       <div class="karte">
@@ -798,7 +816,10 @@ function deckelDatei() {
 }
 
 // ======================================================================
+let QR_SVG = '';
+const qrHtml = mm => `<div style="width:${mm}mm;height:${mm}mm">${QR_SVG.replace('<svg ', '<svg style="width:100%;height:100%;display:block" ')}</div>`;
 async function main() {
+  QR_SVG = D.onlineLink ? await require('qrcode').toString(D.onlineLink, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#1f4d38', light: '#ffffff' } }) : '';
   assetsRegistrieren();
   const sl = suchlistenDatei();
   const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei()];

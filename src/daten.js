@@ -12,6 +12,9 @@ const listenName = 'Einkaufsliste';
 // Widmung auf dem Schachteldeckel (leer lassen = keine Widmung)
 const widmung = '';
 
+// Link zur Online-Version (QR-Code in Spielregel und auf dem Deckel)
+const onlineLink = 'https://www.martiversum.at/weihnacht/susi/index.html';
+
 // Die 8 Orte im Uhrzeigersinn, beginnend oben links.
 // `mitte: true` = von hier führt ein Weg direkt in Susis Weihnachtsküche.
 const orte = [
@@ -112,4 +115,4 @@ const jakobKarten = [
 // Leere Karten zum Selbstbeschriften (füllen den letzten Bogen auf)
 const leereKarten = 0;
 
-module.exports = { titel, titelZeilen, untertitel, zentrum, kartenName, kartenNameMehrzahl, listenName, widmung, orte, exemplareProDing, suchlisten, figuren, kartenarten, jakobKarten, leereKarten };
+module.exports = { onlineLink, titel, titelZeilen, untertitel, zentrum, kartenName, kartenNameMehrzahl, listenName, widmung, orte, exemplareProDing, suchlisten, figuren, kartenarten, jakobKarten, leereKarten };
