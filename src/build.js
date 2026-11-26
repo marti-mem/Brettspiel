@@ -410,7 +410,7 @@ function kartenDatei() {
   for (let b = 0; b < boegen; b++) {
     const teil = vorder.slice(b * 9, b * 9 + 9);
     body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Vorderseite</div><div class="raster">${teil.join('')}</div>${marken}</div>`;
-    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array(9).fill(kartenRueckseite()).join('')}</div>${marken}</div>`;
+    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array.from({ length: 9 }, (_, j) => (Math.floor(j / 3) * 3 + (2 - (j % 3)) < teil.length ? kartenRueckseite() : '<div class="karte"></div>')).join('')}</div>${marken}</div>`;
   }
   return { name: '03_Wichtel-Karten_A4_beidseitig', html: htmlDoc(D.kartenNameMehrzahl, KARTEN_CSS, body), anzahl: vorder.length };
 }
@@ -592,11 +592,11 @@ function regelDatei() {
   const kartenZahl = D.jakobKarten.reduce((a, k) => a + k.anzahl, 0);
   const seite1 = `<div class="page s1">
     <h1>${emoHtml('🎄', 12)}${esc(D.titel)}</h1>
-    <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Spieler · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
+    <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Personen · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
     <div class="story">Es ist der 24. Dezember! Susi ist für ihre Kochpartys berühmt, und heute hat sie sich etwas ganz Besonderes vorgenommen:
     <b>das beste Weihnachtsessen der Welt</b> für Jakob und die ganze Familie. Doch oje, in der Küche fehlt noch so einiges: Erdäpfel für den Erdäpfelsalat, Maroni, Eier, Vanillekipferl, Kinderpunsch und ihr Geheimrezept …
     Zum Glück helfen alle beim Einkaufen mit!
-    <b>Wer zuerst alle Zutaten von seiner ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe und gewinnt!</b></div>
+    <b>Wer zuerst alle Zutaten von seiner ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt!</b></div>
 
     <div class="zwei">
     <div>
@@ -606,16 +606,16 @@ function regelDatei() {
         <li>10 Spielfiguren</li>
         <li>${D.orte.length * D.exemplareProDing} Zutaten (${D.exemplareProDing}× ${D.orte.length} Sorten), 1 Kalender-Stern</li>
         <li>${D.suchlisten.length} ${LN}n</li>
-        <li>${kartenZahl} ${KNM} (+ ${D.leereKarten} leere für eigene Ideen)</li>
+        <li>${kartenZahl} ${KNM}</li>
         <li>1 Würfel</li>
       </ul>
     </div>
     <div>
       <h2>${emoHtml('🧩', 6)}Vorbereitung</h2>
       <ol>
-        <li>Jeder sucht sich eine <b>Figur</b> aus und stellt sie in <b>${Z}</b> (Mitte).</li>
+        <li>Alle suchen sich eine <b>Figur</b> aus und stellt sie in <b>${Z}</b> (Mitte).</li>
         <li>Die <b>Gegenstände</b> nach Sorten neben den Plan legen (Vorrat).</li>
-        <li>Die <b>${LN}n</b> mischen. Jeder zieht eine und legt sie <b>offen</b> vor sich.</li>
+        <li>Die <b>${LN}n</b> mischen. Alle ziehen eine und legen sie <b>offen</b> vor sich.</li>
         <li>Die <b>${KNM}</b> mischen und verdeckt bereitlegen.</li>
         <li>Die <b>jüngste</b> Person beginnt, dann geht es im Uhrzeigersinn weiter.</li>
       </ol>
@@ -628,7 +628,7 @@ function regelDatei() {
 
     <h2>${emoHtml('🎲', 6)}So spielst du</h2>
     <ol>
-      <li><b>Würfle</b> und zieh genau so viele Felder.</li>
+      <li><b>Würfle</b> und zieh genau so viele Felder – nicht mehr und nicht weniger.</li>
       <li><b>Die Richtung darfst du jedes Mal selbst wählen</b>, vorwärts oder rückwärts. Nur während eines Zuges darfst du nicht umdrehen.</li>
       <li>An den <b>4 Abzweigungen</b> (${abzweigText}) darfst du in Richtung Mitte abbiegen.
           <b>${Z} zählt als 1 Feld.</b> Du darfst einfach hindurchgehen und auf einem anderen Weg wieder hinaus. Das ist eine tolle Abkürzung!</li>
@@ -638,11 +638,10 @@ function regelDatei() {
 
     <h2>${emoHtml('📍', 6)}Wo bist du gelandet?</h2>
     <ul>
-      <li><b>Auf einem Ort:</b> Steht die Sache dieses Ortes auf deiner ${LN} und hast du sie noch nicht? Dann nimm sie dir aus dem Vorrat und leg sie auf deine Liste. Das gilt auch, wenn dich eine Karte dorthin schickt.</li>
+      <li><b>Genau auf einem Ort:</b> Eine Zutat bekommst du nur, wenn du <b>genau</b> auf ihrem Ort landest – vorbeiziehen reicht nicht. Steht die Sache dieses Ortes auf deiner ${LN} und hast du sie noch nicht? Dann nimm sie dir aus dem Vorrat und leg sie auf deine Liste. Das gilt auch, wenn dich eine Karte dorthin schickt.</li>
       <li><b>Auf einem Sternfeld</b> ${i('⭐', 3.6)}: Zieh eine <b>${KN}</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
-      <li><b>Auf einem leeren Feld:</b> Es passiert nichts, und der Nächste ist dran.</li>
+      <li><b>Auf einem leeren Feld:</b> Es passiert nichts, und die nächste Person ist dran.</li>
     </ul>
-    <div class="box rot" style="margin-top:2mm;padding:1.8mm 4mm"><p><b>${i('🍽️')} Und nach dem Spiel?</b> Wie beim perfekten Dinner vergeben alle Mitspieler Susi für ihr Weihnachtsmenü 1 bis 10 Punkte. Und vielleicht wird das Menü ja wirklich gekocht! ${i('😉')}</p></div>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel</span><span>Seite 1/2</span></div>
   </div>`;
 
@@ -655,8 +654,8 @@ function regelDatei() {
     <p style="margin-top:1.2mm">Wichtig: Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
 
     <h2>${emoHtml('🏆', 6)}Wer gewinnt?</h2>
-    <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes <b>${Z}</b> erreicht, wird Susis Chef-Gehilfe und gewinnt.
-    Du musst die Küche <b>nicht genau</b> treffen, übrige Würfelpunkte verfallen. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
+    <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes in <b>${Z}</b> ankommt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt.
+    Die Küche musst du <b>genau</b> treffen! Würfelst du zu viel, ziehst du durch die Küche hindurch und auf einem anderen Weg wieder hinaus. Dann versuchst du es im nächsten Zug noch einmal. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
 
     <h2>${emoHtml('👫', 6)}Team-Spiel für 7 bis 10 Personen</h2>
     <div class="box blau">
@@ -664,7 +663,7 @@ function regelDatei() {
       <li>Bildet <b>Zweier-Teams</b> (bei ungerader Zahl ein Dreier-Team). Jede Person hat ihre eigene Figur, jedes Team <b>eine gemeinsame ${LN}</b>. Die Teams sind reihum dran, im Team wird abwechselnd gewürfelt.</li>
       <li>Nach dem Würfeln entscheidet das Team gemeinsam, <b>welche seiner Figuren</b> zieht.</li>
       <li>Was irgendeine Figur des Teams findet, gehört dem ganzen Team. Auch Joker gehören dem Team (höchstens 2).</li>
-      <li>Das Team gewinnt, sobald die Liste voll ist und <b>eine</b> seiner Figuren ${Z} erreicht.</li>
+      <li>Das Team gewinnt, sobald die Liste voll ist und <b>eine</b> seiner Figuren ${Z} genau erreicht.</li>
     </ul>
     </div>
 
@@ -682,11 +681,10 @@ function regelDatei() {
 
     <h2>${emoHtml('⚙️', 6)}Noch mehr Varianten</h2>
     <div class="box">
-      <p><b>${i('🐣')} Für die Kleinsten:</b> Eine Sache darf man schon einsammeln, wenn man an ihrem Ort nur <b>vorbeizieht</b>.</p>
+      <p><b>${i('🐣')} Für die Kleinsten:</b> Eine Sache darf man schon einsammeln, wenn man an ihrem Ort nur <b>vorbeizieht</b>, und die Küche muss nicht genau getroffen werden.</p>
       <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Sachen</b>. Deckt vorher eine beliebige auf der Liste ab.</p>
-      <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>. ${Z} muss am Schluss <b>genau</b> erreicht werden, und jeder darf nur <b>1 Joker</b> haben.</p>
+      <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>, und alle dürfen nur <b>1 Joker</b> haben.</p>
     </div>
-    <p style="margin-top:2.5mm"><b>${i('✏️')} Eigene Karten:</b> Auf die leeren Karten könnt ihr eigene Ideen schreiben, etwa Susis Lieblingswitz oder eine kleine Weihnachtsaufgabe für alle.</p>
     <p style="margin-top:2.5mm;text-align:center;font-family:Fredoka;font-size:5mm;color:#c62828">Frohe Weihnachten und viel Spaß! ${i('🎄', 5)}${i('🎁', 5)}${i('⭐', 5)}</p>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel · Bilder: Twemoji (CC-BY 4.0)</span><span>Seite 2/2</span></div>
   </div>`;
@@ -714,7 +712,7 @@ function deckelDatei() {
   const body = `<div class="page"><div class="rahmen"></div><div class="rahmen2"></div>${deko}
     <div class="t1">Susis</div><div class="t2">Weihnachtsdinner</div><div class="unter">${esc(D.untertitel)}</div>
     <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 14)}</div>`).join('')}</div>
-    <div class="info">2–6 Spieler · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
+    <div class="info">2–6 Personen · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
     ${D.widmung ? `<div class="widmung">${esc(D.widmung)}</div>` : ''}
   </div>`;
   return { name: '07_Schachteldeckel_A4', html: htmlDoc('Schachteldeckel', css, body) };
