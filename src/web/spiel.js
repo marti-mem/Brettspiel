@@ -480,6 +480,8 @@ function regeln() {
   $('#modalInhalt').innerHTML = `<div class="regeln">
   <h2>Spielregel in Kürze</h2>
   <p>Susi will das <b>perfekte Weihnachtsdinner</b> kochen, doch es fehlen noch Zutaten. Wer zuerst alle 4 Zutaten der eigenen <b>Einkaufsliste</b> in <b>${SPIEL.zentrum}</b> bringt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt!</p>
+  <h3>Vorbereitung</h3><ul>
+  <li>Zuerst bekommt jede Person (bzw. jedes Team) eine <b>Einkaufsliste</b> mit 4 Zutaten – in der Online-Version wird sie automatisch zugelost und rechts angezeigt.</li></ul>
   <h3>Ziehen</h3><ul>
   <li>Würfeln und <b>genau</b> so viele Felder ziehen. Die Richtung darfst du jedes Mal frei wählen – nur im Zug nicht umdrehen.</li>
   <li>An den vier Abzweigungen geht es in die Mitte. Die Küche zählt als 1 Feld und ist eine Abkürzung.</li>

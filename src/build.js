@@ -696,9 +696,9 @@ function regelDatei() {
     <div>
       <h2>${sternHtml(4.6)}Vorbereitung</h2>
       <ol>
+        <li><b>Zuerst die ${LN} ziehen:</b> Die ${LN}n mischen, alle ziehen eine und legen sie <b>offen</b> vor sich. Darauf stehen die 4 Zutaten, die ihr besorgen müsst.</li>
         <li>Alle suchen sich eine <b>Figur</b> aus und stellen sie in <b>${Z}</b> (Mitte).</li>
-        <li>Die <b>Gegenstände</b> nach Sorten neben den Plan legen (Vorrat).</li>
-        <li>Die <b>${LN}n</b> mischen. Alle ziehen eine und legen sie <b>offen</b> vor sich.</li>
+        <li>Die <b>Zutaten-Plättchen</b> nach Sorten neben den Plan legen (Vorrat).</li>
         <li>Die <b>${KNM}</b> mischen und verdeckt bereitlegen.</li>
         <li>Die <b>jüngste</b> Person beginnt, dann geht es im Uhrzeigersinn weiter.</li>
       </ol>
