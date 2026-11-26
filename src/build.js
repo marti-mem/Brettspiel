@@ -212,7 +212,9 @@ function planInhalt() {
     const zeilen = [
       { icon: `<circle r="7" fill="${P.rot}"/><path d="${stern5(0, 0.4, 4.6)}" fill="${P.goldHell}"/>`, t1: 'Sternfeld', t2: D.kartenName + ' ziehen' },
       { icon: `<circle r="7" fill="#fff" stroke="${o.farbe}" stroke-width="1.6"/>${emoSvg(o.ding.emoji, 0, 0, 8)}`, t1: 'Ort', t2: 'Zutat einsammeln' },
-      { icon: `<circle r="7" fill="${P.creme2}" stroke="${P.gold}" stroke-width="1"/>${emoSvg(D.zentrum.emoji, 0, 0, 8.5)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
+      { icon: fs.existsSync(path.join(ROOT, 'assets/susi_mitte.jpg'))
+        ? `<clipPath id="legSusi"><circle r="6.6"/></clipPath><image href="data:image/jpeg;base64,${fs.readFileSync(path.join(ROOT, 'assets/susi_mitte.jpg')).toString('base64')}" x="-6.6" y="-6.6" width="13.2" height="13.2" preserveAspectRatio="xMidYMid slice" clip-path="url(#legSusi)"/><circle r="6.8" fill="none" stroke="${P.gold}" stroke-width="1"/>`
+        : `<circle r="7" fill="${P.creme2}" stroke="${P.gold}" stroke-width="1"/>${emoSvg(D.zentrum.emoji, 0, 0, 8.5)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
     ];
     let g = `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}`;
     g += `<text x="${cx}" y="${cy - 31}" text-anchor="middle" font-family="${SERIF}" font-size="9" fill="${P.tanne}">So geht's</text>`;
@@ -243,7 +245,7 @@ function planInhalt() {
     g += `<text x="${bx + bw / 2}" y="${by + 13.2}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="5" fill="${P.rot}">noch Zutaten!</text>`;
     return g;
   };
-  s += titelBlock(118, 118, 0) + susiKarte(282, 282) + kalender(282, 118) + legende(118, 282, 180);
+  s += titelBlock(118, 118, 0) + titelBlock(282, 282, 180) + kalender(282, 118) + legende(118, 282, 180);
 
   // Felder
   s += `<defs><radialGradient id="fCreme" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="${P.creme2}"/></radialGradient>
@@ -296,13 +298,26 @@ function planInhalt() {
     const a = (i / 14) * Math.PI * 2 + 0.2, rr = R_ZIMMER + 2.5;
     s += `<circle cx="${(C.x + Math.cos(a) * rr).toFixed(2)}" cy="${(C.y + Math.sin(a) * rr).toFixed(2)}" r="1.6" fill="${i % 2 ? P.rot : P.goldHell}"/>`;
   }
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 2}" fill="${P.creme}" stroke="${P.gold}" stroke-width="1.4"/>`;
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 5}" fill="none" stroke="${P.gold}" stroke-width="0.5"/>`;
-  s += emoSvg(D.zentrum.emoji, C.x, C.y - 14, 27);
-  s += `<text x="${C.x}" y="${C.y + 11}" text-anchor="middle" font-family="${SERIF}" font-size="7.2" fill="${P.rot}">${esc(D.zentrum.kurz[0])}</text>`;
-  s += `<text x="${C.x}" y="${C.y + 18.5}" text-anchor="middle" font-family="${SERIF}" font-size="6.6" fill="${P.rot}">${esc(D.zentrum.kurz[1])}</text>`;
-  s += `<rect x="${C.x - 14}" y="${C.y + 22}" width="28" height="6.4" rx="3.2" fill="${P.tanne}"/>`;
-  s += `<text x="${C.x}" y="${C.y + 26.4}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.5" letter-spacing="0.3" fill="${P.goldHell}">START &amp; ZIEL</text>`;
+  const susiF = path.join(ROOT, 'assets/susi_mitte.jpg');
+  if (fs.existsSync(susiF)) {
+    const uri = 'data:image/jpeg;base64,' + fs.readFileSync(susiF).toString('base64');
+    const r = R_ZIMMER - 2;
+    s += `<clipPath id="mitteClip"><circle cx="${C.x}" cy="${C.y}" r="${r}"/></clipPath>`;
+    s += `<image href="${uri}" x="${C.x - r}" y="${C.y - r}" width="${2 * r}" height="${2 * r}" preserveAspectRatio="xMidYMid slice" clip-path="url(#mitteClip)"/>`;
+    s += `<circle cx="${C.x}" cy="${C.y}" r="${r}" fill="none" stroke="${P.gold}" stroke-width="1.6"/>`;
+    // Namensband
+    const bw = 66, by = C.y + 17;
+    s += `<path d="M${C.x - bw / 2 - 5} ${by + 2} L${C.x - bw / 2} ${by + 2} L${C.x - bw / 2} ${by + 13} L${C.x - bw / 2 - 5} ${by + 13} L${C.x - bw / 2 - 2.5} ${by + 7.5}Z" fill="${P.rotDunkel}"/>`;
+    s += `<path d="M${C.x + bw / 2 + 5} ${by + 2} L${C.x + bw / 2} ${by + 2} L${C.x + bw / 2} ${by + 13} L${C.x + bw / 2 + 5} ${by + 13} L${C.x + bw / 2 + 2.5} ${by + 7.5}Z" fill="${P.rotDunkel}"/>`;
+    s += `<rect x="${C.x - bw / 2}" y="${by}" width="${bw}" height="13.5" rx="2" fill="${P.rot}" stroke="${P.gold}" stroke-width="0.7"/>`;
+    s += `<text x="${C.x}" y="${by + 6.3}" text-anchor="middle" font-family="${SERIF}" font-size="5.4" fill="#fff">${esc(D.zentrum.name)}</text>`;
+    s += `<text x="${C.x}" y="${by + 11.2}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.2" letter-spacing="0.3" fill="${P.goldHell}">START &amp; ZIEL</text>`;
+  } else {
+    s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 2}" fill="${P.creme}" stroke="${P.gold}" stroke-width="1.4"/>`;
+    s += emoSvg(D.zentrum.emoji, C.x, C.y - 14, 27);
+    s += `<text x="${C.x}" y="${C.y + 11}" text-anchor="middle" font-family="${SERIF}" font-size="7.2" fill="${P.rot}">${esc(D.zentrum.kurz[0])}</text>`;
+    s += `<text x="${C.x}" y="${C.y + 18.5}" text-anchor="middle" font-family="${SERIF}" font-size="6.6" fill="${P.rot}">${esc(D.zentrum.kurz[1])}</text>`;
+  }
   return s;
 }
 
