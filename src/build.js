@@ -32,12 +32,26 @@ function emojiInner(ch) {
   }
   throw new Error('Emoji nicht gefunden: ' + ch + ' ' + kandidaten);
 }
+// Illustrationen (Pixar-Stil) ersetzen Emojis, wenn eine Bilddatei in assets/ liegt
+const ASSET = {};
+const assetUri = {};
+function assetDaten(datei) {
+  if (!assetUri[datei]) assetUri[datei] = 'data:image/png;base64,' + fs.readFileSync(datei).toString('base64');
+  return assetUri[datei];
+}
+function assetsRegistrieren() {
+  const reg = (emoji, rel) => { const f = path.join(ROOT, 'assets', rel); if (emoji && fs.existsSync(f)) ASSET[emoji] = f; };
+  D.orte.forEach(o => { reg(o.emoji, `orte/${o.id}.png`); reg(o.ding.emoji, `zutaten/${o.id}.png`); });
+  reg(D.zentrum.emoji, 'zentrum.png');
+}
 // Emoji in einem SVG (Koordinaten in mm), zentriert auf cx/cy
-const emoSvg = (ch, cx, cy, size, extra = '') =>
-  `<svg x="${cx - size / 2}" y="${cy - size / 2}" width="${size}" height="${size}" viewBox="0 0 36 36" ${extra}>${emojiInner(ch)}</svg>`;
+const emoSvg = (ch, cx, cy, size, extra = '') => ASSET[ch]
+  ? `<image href="${assetDaten(ASSET[ch])}" x="${cx - size * 0.62}" y="${cy - size * 0.62}" width="${size * 1.24}" height="${size * 1.24}" ${extra}/>`
+  : `<svg x="${cx - size / 2}" y="${cy - size / 2}" width="${size}" height="${size}" viewBox="0 0 36 36" ${extra}>${emojiInner(ch)}</svg>`;
 // Emoji in HTML
-const emoHtml = (ch, size, cls = '') =>
-  `<svg class="emo ${cls}" style="width:${size}mm;height:${size}mm" viewBox="0 0 36 36">${emojiInner(ch)}</svg>`;
+const emoHtml = (ch, size, cls = '') => ASSET[ch]
+  ? `<img class="emo ${cls}" style="width:${size * 1.24}mm;height:${size * 1.24}mm;margin:${-size * 0.12}mm" src="${assetDaten(ASSET[ch])}">`
+  : `<svg class="emo ${cls}" style="width:${size}mm;height:${size}mm" viewBox="0 0 36 36">${emojiInner(ch)}</svg>`;
 
 // ---------- gemeinsames CSS ----------
 const fontUrl = f => 'file://' + path.join(ROOT, 'node_modules/@fontsource', f);
@@ -120,22 +134,12 @@ const P = {
 };
 const SERIF = "'DM Serif Display', serif";
 
-// Hintergrund (Tannengrün mit Schneegestöber), füllt w x h ab (x0, y0)
-function planHintergrund(x0, y0, w, h, seed = 11) {
-  const id = 'bg' + seed;
-  let s = `<defs><radialGradient id="${id}" cx="50%" cy="50%" r="72%"><stop offset="0" stop-color="${P.gruen1}"/><stop offset="1" stop-color="${P.gruen2}"/></radialGradient></defs>`;
-  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="url(#${id})"/>`;
-  const r = rng(seed);
-  const n = Math.round((w * h) / 260);
-  for (let i = 0; i < n; i++) {
-    const x = x0 + r() * w, y = y0 + r() * h, g = 0.35 + r() * 0.9;
-    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${g.toFixed(2)}" fill="#ffffff" opacity="${(0.12 + r() * 0.28).toFixed(2)}"/>`;
-  }
-  for (let i = 0; i < n / 14; i++) {
-    const x = x0 + r() * w, y = y0 + r() * h, g = 1.6 + r() * 2.2;
-    s += `<path d="${stern4(x, y, g)}" fill="${P.goldHell}" opacity="${(0.35 + r() * 0.35).toFixed(2)}"/>`;
-  }
-  return s;
+// Hintergrund: Winterlandschaft (Illustration), füllt w x h ab (x0, y0)
+function planHintergrund(x0, y0, w, h) {
+  const f = path.join(ROOT, 'assets/hintergrund.jpg');
+  if (!fs.existsSync(f)) return `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#cfdff3"/>`;
+  const uri = 'data:image/jpeg;base64,' + fs.readFileSync(f).toString('base64');
+  return `<image href="${uri}" x="${x0}" y="${y0}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice"/>`;
 }
 // vierzackiger Funkelstern
 function stern4(x, y, r) {
@@ -167,13 +171,13 @@ function planInhalt() {
   // Weg: goldener Rand, cremefarbenes Band
   const ringPfad = 'M' + ring.map(f => `${f.x} ${f.y}`).join(' L') + ' Z';
   const speichenPfad = speichen.map(sp => `M${sp.von.x} ${sp.von.y} L${C.x} ${C.y}`).join(' ');
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="25" stroke-linejoin="round" transform="translate(0 1.2)"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#1b2f5a" stroke-opacity="0.28" stroke-width="25" stroke-linejoin="round" transform="translate(0 1.2)"/>`;
   s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.gold}" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>`;
   s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.creme}" stroke-width="20.5" stroke-linejoin="round" stroke-linecap="round"/>`;
   s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.gold}" stroke-opacity="0.55" stroke-width="0.6" stroke-dasharray="0.1 3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 
   // Karten-Felder in den vier Vierteln
-  const kasten = (cx, cy) => `<rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="12" fill="#000" opacity="0.22" transform="translate(0 1.5)"/>
+  const kasten = (cx, cy) => `<rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="12" fill="#1b2f5a" opacity="0.26" transform="translate(0 1.5)"/>
     <rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="12" fill="${P.creme}"/>
     <rect x="${cx - 55}" y="${cy - 47}" width="110" height="94" rx="9.5" fill="none" stroke="${P.gold}" stroke-width="0.7"/>`;
 
@@ -220,18 +224,40 @@ function planInhalt() {
     });
     return g + '</g>';
   };
-  s += titelBlock(118, 118, 0) + titelBlock(282, 282, 180) + kalender(282, 118) + legende(118, 282, 180);
+  const susiKarte = (cx, cy) => {
+    const f = path.join(ROOT, 'assets/susi_kueche.jpg');
+    if (!fs.existsSync(f)) return titelBlock(cx, cy, 180);
+    const uri = 'data:image/jpeg;base64,' + fs.readFileSync(f).toString('base64');
+    const x = cx - 58, y = cy - 50, w = 116, h = 100;
+    let g = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="#1b2f5a" opacity="0.28" transform="translate(0 1.5)"/>`;
+    g += `<clipPath id="susiClip"><rect x="${x + 2.2}" y="${y + 2.2}" width="${w - 4.4}" height="${h - 4.4}" rx="10"/></clipPath>`;
+    g += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${P.creme}"/>`;
+    g += `<image href="${uri}" x="${x + 2.2}" y="${y + 2.2}" width="${w - 4.4}" height="${h - 4.4}" preserveAspectRatio="xMidYMid slice" clip-path="url(#susiClip)"/>`;
+    g += `<rect x="${x + 2.2}" y="${y + 2.2}" width="${w - 4.4}" height="${h - 4.4}" rx="10" fill="none" stroke="${P.gold}" stroke-width="0.9"/>`;
+    // Sprechblase
+    const bx = cx + 6, by = cy - 44, bw = 48, bh = 17;
+    g += `<path d="M${bx + 6} ${by + bh - 0.5} L${bx - 7} ${by + bh + 7} L${bx + 13} ${by + bh - 0.5}Z" fill="#fffdf8" stroke="${P.gold}" stroke-width="0.6"/>`;
+    g += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8" fill="#fffdf8" stroke="${P.gold}" stroke-width="0.6"/>`;
+    g += `<path d="M${bx + 6.2} ${by + bh - 0.9} L${bx + 12.8} ${by + bh - 0.9}" stroke="#fffdf8" stroke-width="1.4"/>`;
+    g += `<text x="${bx + bw / 2}" y="${by + 7.2}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="5" fill="${P.rot}">Hilfe! Mir fehlen</text>`;
+    g += `<text x="${bx + bw / 2}" y="${by + 13.2}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="5" fill="${P.rot}">noch Zutaten!</text>`;
+    return g;
+  };
+  s += titelBlock(118, 118, 0) + susiKarte(282, 282) + kalender(282, 118) + legende(118, 282, 180);
 
   // Felder
+  s += `<defs><radialGradient id="fCreme" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="${P.creme2}"/></radialGradient>
+    <radialGradient id="fRot" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#e8304a"/><stop offset="1" stop-color="${P.rotDunkel}"/></radialGradient>
+    <radialGradient id="oCreme" cx="50%" cy="38%" r="65%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e9eef7"/></radialGradient></defs>`;
   const feld = f => {
-    let g = `<circle cx="${f.x}" cy="${f.y + 0.8}" r="${R_FELD}" fill="#000" opacity="0.18"/>`;
+    let g = `<circle cx="${f.x}" cy="${f.y + 0.8}" r="${R_FELD}" fill="#1b2f5a" opacity="0.22"/>`;
     if (f.typ === 'stern') {
-      g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="${P.rot}" stroke="${P.gold}" stroke-width="1.3"/>`;
+      g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="url(#fRot)" stroke="${P.gold}" stroke-width="1.3"/>`;
       g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2.6}" fill="none" stroke="${P.goldHell}" stroke-width="0.5" stroke-dasharray="0.1 1.6" stroke-linecap="round"/>`;
       g += `<path d="${stern5(f.x, f.y + 0.6, 8)}" fill="${P.goldHell}"/>`;
       return g;
     }
-    g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#fffdf8" stroke="${P.gold}" stroke-width="1.3"/>`;
+    g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="url(#fCreme)" stroke="${P.gold}" stroke-width="1.3"/>`;
     g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2.6}" fill="none" stroke="${P.creme2}" stroke-width="0.8"/>`;
     return g;
   };
@@ -241,24 +267,24 @@ function planInhalt() {
   // Orte
   ring.filter(f => f.typ === 'ort').forEach(f => {
     const o = f.ort;
-    s += `<circle cx="${f.x}" cy="${f.y + 1.2}" r="${R_ORT + 1}" fill="#000" opacity="0.25"/>`;
+    s += `<circle cx="${f.x}" cy="${f.y + 1.2}" r="${R_ORT + 1}" fill="#1b2f5a" opacity="0.28"/>`;
     s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT + 1}" fill="${P.gold}"/>`;
     s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT - 0.6}" fill="${o.farbe}"/>`;
-    s += `<circle cx="${f.x}" cy="${f.y - 3}" r="17.2" fill="#fffdf8"/>`;
-    s += emoSvg(o.emoji, f.x, f.y - 3.5, 22);
+    s += `<circle cx="${f.x}" cy="${f.y - 1}" r="${R_ORT - 3.2}" fill="url(#oCreme)"/>`;
+    s += emoSvg(o.emoji, f.x, f.y - 5, 33);
     const fs_ = o.name.length > 10 ? 4.3 : 4.8;
     const bw = Math.max(34, o.name.length * fs_ * 0.56 + 9);
     s += `<rect x="${f.x - bw / 2}" y="${f.y + 13.2}" width="${bw}" height="8.6" rx="4.3" fill="${o.farbe}" stroke="${P.gold}" stroke-width="0.8"/>`;
     s += `<text x="${f.x}" y="${f.y + 19.1}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="#fff">${esc(o.name)}</text>`;
     const a = ((f.x < 200 ? -135 : -45) * Math.PI) / 180;
     const bx = f.x + Math.cos(a) * 25.5, by = f.y + Math.sin(a) * 25.5;
-    s += `<circle cx="${bx}" cy="${by + 0.6}" r="9" fill="#000" opacity="0.22"/>`;
+    s += `<circle cx="${bx}" cy="${by + 0.6}" r="9" fill="#1b2f5a" opacity="0.26"/>`;
     s += `<circle cx="${bx}" cy="${by}" r="9" fill="#fffdf8" stroke="${P.gold}" stroke-width="1.4"/>`;
     s += emoSvg(o.ding.emoji, bx, by, 11.5);
   });
 
   // Zentrum mit Adventskranz
-  s += `<circle cx="${C.x}" cy="${C.y + 1.5}" r="${R_ZIMMER + 5}" fill="#000" opacity="0.25"/>`;
+  s += `<circle cx="${C.x}" cy="${C.y + 1.5}" r="${R_ZIMMER + 5}" fill="#1b2f5a" opacity="0.28"/>`;
   const kranz = rng(5);
   for (let i = 0; i < 64; i++) {
     const a = (i / 64) * Math.PI * 2, rr = R_ZIMMER + 1.5 + (kranz() - 0.5) * 3;
@@ -272,7 +298,7 @@ function planInhalt() {
   }
   s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 2}" fill="${P.creme}" stroke="${P.gold}" stroke-width="1.4"/>`;
   s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 5}" fill="none" stroke="${P.gold}" stroke-width="0.5"/>`;
-  s += emoSvg(D.zentrum.emoji, C.x - 4, C.y - 12, 27) + emoSvg(D.zentrum.deko, C.x + 14, C.y - 6, 14);
+  s += emoSvg(D.zentrum.emoji, C.x, C.y - 14, 27);
   s += `<text x="${C.x}" y="${C.y + 11}" text-anchor="middle" font-family="${SERIF}" font-size="7.2" fill="${P.rot}">${esc(D.zentrum.kurz[0])}</text>`;
   s += `<text x="${C.x}" y="${C.y + 18.5}" text-anchor="middle" font-family="${SERIF}" font-size="6.6" fill="${P.rot}">${esc(D.zentrum.kurz[1])}</text>`;
   s += `<rect x="${C.x - 14}" y="${C.y + 22}" width="28" height="6.4" rx="3.2" fill="${P.tanne}"/>`;
@@ -289,7 +315,7 @@ function planMitHintergrund() {
 const MS = { brett: 300, rand: 10, sicher: 5 };
 function planMeinspielSvg(kontrolle = false) {
   const D_ = MS.brett + 2 * MS.rand, k = MS.brett / B;
-  let s = planHintergrund(0, 0, D_, D_, 23);
+  let s = planHintergrund(0, 0, D_, D_);
   s += `<g transform="translate(${MS.rand} ${MS.rand}) scale(${k})">${planInhalt()}</g>`;
   if (kontrolle) {
     const r = MS.rand, sc = MS.rand + MS.sicher;
@@ -720,6 +746,7 @@ function deckelDatei() {
 
 // ======================================================================
 async function main() {
+  assetsRegistrieren();
   const sl = suchlistenDatei();
   const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei()];
   const browser = await chromium.launch();
