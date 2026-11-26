@@ -21,5 +21,4 @@ Fehlt ein Foto, wird ein farbiger Platzhalter gedruckt.
 
 ## Stand
 
-Fertig (Pixar-Stil mit Weihnachtsmütze): Mami (Susi), Jakob, Mama, Astrid, Marti, Birgit, Lukas, Oma, Opa.
-Noch offen: Gerhard – bis dahin wird ein Platzhalter gedruckt.
+Fertig (Pixar-Stil mit Weihnachtsmütze): alle 10 Figuren.
