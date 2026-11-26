@@ -167,7 +167,7 @@ function planInhalt() {
   const legende = (cx, cy, rot) => {
     const zeilen = [
       { icon: `<circle cx="0" cy="0" r="7" fill="#ffd54f" stroke="#8fb0c9" stroke-width="0.8"/>${emoSvg('⭐', 0, 0, 9)}`, t1: 'Sternfeld', t2: D.kartenName + ' ziehen' },
-      { icon: `<circle cx="0" cy="0" r="7" fill="#6a1b9a"/><circle cx="0" cy="0" r="4.6" fill="#fff"/>${emoSvg('🎁', 0, 0, 7)}`, t1: 'Ort', t2: 'Gegenstand einsammeln' },
+      { icon: `<circle cx="0" cy="0" r="7" fill="${D.orte[7].farbe}"/><circle cx="0" cy="0" r="4.6" fill="#fff"/>${emoSvg(D.orte[7].ding.emoji, 0, 0, 7)}`, t1: 'Ort', t2: 'Zutat einsammeln' },
       { icon: `<circle cx="0" cy="0" r="7" fill="#fff3e0" stroke="#c62828" stroke-width="0.8"/>${emoSvg(D.zentrum.emoji, 0, 0, 9)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
     ];
     let g = `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}`;
@@ -211,11 +211,11 @@ function planInhalt() {
     s += emoSvg(o.ding.emoji, bx, by, 11);
   });
 
-  // Susis Weihnachtsstube
+  // Zentrum (Start & Ziel)
   s += `<circle cx="${C.x}" cy="${C.y + 1}" r="${R_ZIMMER}" fill="#000" opacity="0.18"/>`;
   s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER}" fill="#fff3e0" stroke="#c62828" stroke-width="1.8"/>`;
   s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 3}" fill="none" stroke="#e6a100" stroke-width="0.8" stroke-dasharray="2 2"/>`;
-  s += emoSvg(D.zentrum.emoji, C.x - 3, C.y - 11, 30) + emoSvg('🎄', C.x + 17, C.y - 6, 15);
+  s += emoSvg(D.zentrum.emoji, C.x - 3, C.y - 11, 30) + emoSvg(D.zentrum.deko, C.x + 17, C.y - 4, 15);
   s += `<text x="${C.x}" y="${C.y + 13}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[0])}</text>`;
   s += `<text x="${C.x}" y="${C.y + 20}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[1])}</text>`;
   s += `<text x="${C.x}" y="${C.y + 27}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.8" fill="#2e7d32">START &amp; ZIEL</text>`;
@@ -365,11 +365,11 @@ function suchlistenDatei() {
   let body = '';
   const seiten = Math.ceil(D.suchlisten.length / 4);
   for (let s = 0; s < seiten; s++) {
-    body += `<div class="page"><div class="seitenhinweis" style="left:10mm;top:11mm">Weihnachtslisten · Bogen ${s + 1}/${seiten} · nur Vorderseite drucken</div>
+    body += `<div class="page"><div class="seitenhinweis" style="left:10mm;top:11mm">${D.listenName}n · Bogen ${s + 1}/${seiten} · nur Vorderseite drucken</div>
       <div class="raster">${D.suchlisten.slice(s * 4, s * 4 + 4).map((l, i) => karte(l, s * 4 + i)).join('')}</div>
       ${markenSvg(210, 297, schnittmarken(10, 20, 190, 190, [10 + SL], [20 + SL]))}</div>`;
   }
-  return { name: '04_Weihnachtslisten_A4', html: htmlDoc('Weihnachtslisten', css, body), tint };
+  return { name: '04_Einkaufslisten_A4', html: htmlDoc(D.listenName + 'n', css, body), tint };
 }
 
 // ======================================================================
@@ -492,6 +492,8 @@ function regelDatei() {
   .kart>b{display:flex;align-items:center;gap:1.2mm;color:var(--f);font-family:Fredoka;font-weight:600;font-size:4mm}
   .box{background:#e8f5e9;border-radius:4mm;padding:2.5mm 4mm;margin-top:2mm}
   .box.lila{background:#f3e5f5}
+  .s1 p,.s1 li{font-size:3.35mm;line-height:1.34}
+  .s1 h2{margin:3mm 0 1.2mm}
   .box.rot{background:#fff8e1;border:0.4mm solid #e6a100}
   .box.blau{background:#e3f2fd}
   .inl{display:inline-block;vertical-align:-0.8mm}
@@ -502,12 +504,13 @@ function regelDatei() {
   const abzweigText = abzweig.slice(0, -1).join(', ') + ' und ' + abzweig[abzweig.length - 1];
   const KN = D.kartenName, KNM = D.kartenNameMehrzahl, LN = D.listenName, Z = D.zentrum.name;
   const kartenZahl = D.jakobKarten.reduce((a, k) => a + k.anzahl, 0);
-  const seite1 = `<div class="page">
+  const seite1 = `<div class="page s1">
     <h1>${emoHtml('🎄', 12)}${esc(D.titel)}</h1>
     <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Spieler · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
-    <div class="story">Es ist der 24. Dezember! Susi möchte für Jakob und die ganze Familie das schönste Weihnachtsfest aller Zeiten vorbereiten.
-    Doch oje, es fehlt noch so viel: der Christbaum, die Plätzchen, die Kerzen … Zum Glück helfen alle mit!
-    <b>Wer zuerst alle Sachen von seiner ${LN} findet und zu Susi in die Weihnachtsstube bringt, gewinnt!</b></div>
+    <div class="story">Es ist der 24. Dezember! Susi ist für ihre Kochpartys berühmt, und heute hat sie sich etwas ganz Besonderes vorgenommen:
+    <b>das beste Weihnachtsessen der Welt</b> für Jakob und die ganze Familie. Doch oje, in der Küche fehlt noch so einiges: Pilze, Käse, Eier, Kartoffeln, ihr Geheimrezept …
+    Zum Glück helfen alle beim Einkaufen mit!
+    <b>Wer zuerst alle Zutaten von seiner ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe und gewinnt!</b></div>
 
     <div class="zwei">
     <div>
@@ -515,7 +518,7 @@ function regelDatei() {
       <ul>
         <li>1 Spielplan</li>
         <li>10 Spielfiguren</li>
-        <li>${D.orte.length * D.exemplareProDing} Gegenstände (je ${D.exemplareProDing}× ${D.orte.length} Sorten) und 1 Kalender-Stern</li>
+        <li>${D.orte.length * D.exemplareProDing} Zutaten (${D.exemplareProDing}× ${D.orte.length} Sorten), 1 Kalender-Stern</li>
         <li>${D.suchlisten.length} ${LN}n</li>
         <li>${kartenZahl} ${KNM} (+ ${D.leereKarten} leere für eigene Ideen)</li>
         <li>1 Würfel</li>
@@ -545,7 +548,7 @@ function regelDatei() {
           <b>${Z} zählt als 1 Feld.</b> Du darfst einfach hindurchgehen und auf einem anderen Weg wieder hinaus. Das ist eine tolle Abkürzung!</li>
       <li>Auf einem Feld dürfen beliebig viele Figuren stehen.</li>
     </ol>
-    <div class="box blau" style="margin-top:2mm"><p><b>Beispiel:</b> Du stehst in ${Z} und würfelst eine <b>3</b>. Damit kommst du genau zu ${abzweig.map(n => '<b>' + n + '</b>').join(', ').replace(/, ([^,]*)$/, ' oder $1')}. Du suchst dir aus, wohin.</p></div>
+    <div class="box blau" style="margin-top:1.5mm;padding:1.8mm 4mm"><p><b>Beispiel:</b> Du stehst in ${Z} und würfelst eine <b>3</b>. Damit kommst du genau zu ${abzweig.map(n => '<b>' + n + '</b>').join(', ').replace(/, ([^,]*)$/, ' oder $1')}. Du suchst dir aus, wohin.</p></div>
 
     <h2>${emoHtml('📍', 6)}Wo bist du gelandet?</h2>
     <ul>
@@ -553,6 +556,7 @@ function regelDatei() {
       <li><b>Auf einem Sternfeld</b> ${i('⭐', 3.6)}: Zieh eine <b>${KN}</b>, lies sie vor (Große helfen Kleinen gern!) und mach, was draufsteht. Danach kommt sie unter den Stapel.</li>
       <li><b>Auf einem leeren Feld:</b> Es passiert nichts, und der Nächste ist dran.</li>
     </ul>
+    <div class="box rot" style="margin-top:2mm;padding:1.8mm 4mm"><p><b>${i('🍽️')} Und nach dem Spiel?</b> Wie beim perfekten Dinner vergeben alle Mitspieler Susi für ihr Weihnachtsmenü 1 bis 10 Punkte. Und vielleicht wird das Menü ja wirklich gekocht! ${i('😉')}</p></div>
     <div class="fuss"><span>${esc(D.titel)} · Spielregel</span><span>Seite 1/2</span></div>
   </div>`;
 
@@ -565,8 +569,8 @@ function regelDatei() {
     <p style="margin-top:1.2mm">Wichtig: Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
 
     <h2>${emoHtml('🏆', 6)}Wer gewinnt?</h2>
-    <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes <b>${Z}</b> erreicht, gewinnt.
-    Du musst die Stube <b>nicht genau</b> treffen, übrige Würfelpunkte verfallen. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
+    <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes <b>${Z}</b> erreicht, wird Susis Chef-Gehilfe und gewinnt.
+    Du musst die Küche <b>nicht genau</b> treffen, übrige Würfelpunkte verfallen. Wer möchte, spielt danach um die weiteren Plätze weiter.</p>
 
     <h2>${emoHtml('👫', 6)}Team-Spiel für 7 bis 10 Personen</h2>
     <div class="box blau">
@@ -617,11 +621,12 @@ function deckelDatei() {
   .reihe div{width:22mm;height:22mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5mm var(--f),0 0 0 2.6mm #fff}
   .info{font-family:Fredoka;font-weight:500;font-size:6mm;color:#fff}
   .widmung{font-family:Fredoka;font-weight:500;font-size:5.5mm;color:#ffe082;margin-top:5mm}
+  .unter{font-family:Fredoka;font-weight:500;font-size:8mm;color:#fff;margin-top:2mm}
   .ecke{position:absolute}`;
   const deko = [['🎄', 16, 14, 18], ['🎅', 262, 16, 16], ['⛄', 18, 172, 16], ['🦌', 262, 172, 16], ['❄️', 52, 30, 7], ['❄️', 236, 158, 7], ['✨', 60, 160, 7], ['✨', 228, 34, 7], ['⭐', 30, 98, 6], ['⭐', 262, 100, 6]]
     .map(([e, x, y, s]) => `<div class="ecke" style="left:${x}mm;top:${y}mm">${emoHtml(e, s)}</div>`).join('');
   const body = `<div class="page"><div class="rahmen"></div><div class="rahmen2"></div>${deko}
-    <div class="t1">Susis</div><div class="t2">Weihnachtszauber</div>
+    <div class="t1">Susis</div><div class="t2">Weihnachtsdinner</div><div class="unter">${esc(D.untertitel)}</div>
     <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 14)}</div>`).join('')}</div>
     <div class="info">2–6 Spieler · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
     ${D.widmung ? `<div class="widmung">${esc(D.widmung)}</div>` : ''}
