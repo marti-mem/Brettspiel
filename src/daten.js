@@ -15,7 +15,7 @@ const widmung = 'Für Susi – Frohe Weihnachten 2026! Dein Wichtel';
 // Die 8 Orte im Uhrzeigersinn, beginnend oben links.
 // `mitte: true` = von hier führt ein Weg direkt in Susis Weihnachtsküche.
 const orte = [
-  { id: 'tannenwald',  name: 'Tannenwald',  emoji: '🌲',  farbe: '#1b5e20', mitte: false, ding: { name: 'Maroni',       emoji: '🌰' } },
+  { id: 'maronistand', name: 'Maronistand', emoji: '🔥',  farbe: '#a0522d', mitte: false, ding: { name: 'Maroni',       emoji: '🌰' } },
   { id: 'baeckerei',   name: 'Bäckerei',    emoji: '🥨', farbe: '#b26a00', mitte: true,  ding: { name: 'Kipferl',      emoji: '🥐' } },
   { id: 'postamt',     name: 'Postamt',     emoji: '📮',  farbe: '#c62828', mitte: false, ding: { name: 'Geheimrezept', emoji: '📜' } },
   { id: 'sini',        name: 'Sini Markt',  emoji: '🛒',  farbe: '#6a1b9a', mitte: true,  ding: { name: 'Karotte',      emoji: '🥕' } },
@@ -89,7 +89,7 @@ const jakobKarten = [
   { art: 'hoppla', anzahl: 1, emoji: '🐔', titel: 'Hühner füttern', text: 'Jakob will unbedingt noch die Hühner füttern. Geh zum Hühnerstall.' },
   { art: 'hoppla', anzahl: 1, emoji: '🎶', titel: 'Chorprobe', text: 'Susi möchte noch kurz bei der Chorprobe zuhören, während die Gans im Rohr ist. Geh zur Kirche.' },
   { art: 'hoppla', anzahl: 1, emoji: '🎠', titel: 'Karussell', text: 'Jakob will noch eine Runde Karussell fahren. Geh zum Weihnachtsmarkt.' },
-  { art: 'hoppla', anzahl: 1, emoji: '🌲', titel: 'Tischdeko', text: 'Susi möchte noch Tannenzweige für den festlichen Tisch. Geh zum Tannenwald.' },
+  { art: 'hoppla', anzahl: 1, emoji: '🌰', titel: 'Heiße Maroni!', text: 'Susi riecht den Maronibrater. Da muss sie hin! Geh zum Maronistand.' },
   { art: 'hoppla', anzahl: 1, emoji: '🧤', titel: 'Handschuh verloren', text: 'Jakob hat einen Handschuh verloren. Zieh 3 Felder zurück – dorthin, woher du gekommen bist.' },
   { art: 'hoppla', anzahl: 1, emoji: '😱', titel: 'Oh nein!', text: 'Susi zählt nach: Die Erdäpfel reichen nicht für alle! Geh zum Bauernhof.' },
 
