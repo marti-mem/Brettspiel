@@ -410,7 +410,7 @@ function kartenDatei() {
   for (let b = 0; b < boegen; b++) {
     const teil = vorder.slice(b * 9, b * 9 + 9);
     body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Vorderseite</div><div class="raster">${teil.join('')}</div>${marken}</div>`;
-    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array.from({ length: 9 }, (_, j) => (Math.floor(j / 3) * 3 + (2 - (j % 3)) < teil.length ? kartenRueckseite() : '<div class="karte"></div>')).join('')}</div>${marken}</div>`;
+    body += `<div class="page"><div class="seitenhinweis" style="left:10.5mm;top:7mm">${D.kartenNameMehrzahl} · Bogen ${b + 1}/${boegen} · Rückseite</div><div class="raster">${Array.from({ length: 9 }, (_, j) => (Math.floor(j / 3) * 3 + (2 - (j % 3)) < teil.length ? kartenRueckseite() : '<div class="karte" style="outline:none"></div>')).join('')}</div>${marken}</div>`;
   }
   return { name: '03_Wichtel-Karten_A4_beidseitig', html: htmlDoc(D.kartenNameMehrzahl, KARTEN_CSS, body), anzahl: vorder.length };
 }
