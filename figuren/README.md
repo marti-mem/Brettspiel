@@ -18,3 +18,8 @@ Der Dateiname muss genau so heißen:
 
 Erlaubt sind `.jpg`, `.jpeg`, `.png` und `.webp`. Danach `npm run build` ausführen.
 Fehlt ein Foto, wird ein farbiger Platzhalter gedruckt.
+
+## Stand
+
+Fertig (Pixar-Stil mit Weihnachtsmütze): Mami (Susi), Jakob, Mama, Astrid, Marti.
+Noch offen: Oma, Opa, Birgit, Gerhard, Lukas – bis dahin werden Platzhalter gedruckt.

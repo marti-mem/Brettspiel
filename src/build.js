@@ -412,11 +412,14 @@ function figurPanel(fig, w, h) {
   const cx = w / 2, cy = 18, r = 12.5;
   let s = `<rect x="0" y="0" width="${w}" height="${h}" fill="${fig.farbe}"/>`;
   s += `<rect x="1.2" y="1.2" width="${w - 2.4}" height="${h - 2.4}" rx="3" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.8"/>`;
-  s += `<circle cx="${cx}" cy="${cy}" r="${r + 1.2}" fill="#fff"/>`;
   if (foto) {
-    s += `<clipPath id="cp-${fig.id}-${w}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>`;
-    s += `<image href="${foto}" x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cp-${fig.id}-${w})"/>`;
+    // Porträt groß im abgerundeten Rahmen über dem Namensschild
+    const ix = 2.4, iy = 2.4, iw = w - 4.8, ih = h - 16.2;
+    s += `<rect x="${ix - 0.7}" y="${iy - 0.7}" width="${iw + 1.4}" height="${ih + 1.4}" rx="3.2" fill="#fff"/>`;
+    s += `<clipPath id="cp-${fig.id}"><rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" rx="2.6"/></clipPath>`;
+    s += `<image href="${foto}" x="${ix}" y="${iy}" width="${iw}" height="${ih}" preserveAspectRatio="xMidYMin slice" clip-path="url(#cp-${fig.id})"/>`;
   } else {
+    s += `<circle cx="${cx}" cy="${cy}" r="${r + 1.2}" fill="#fff"/>`;
     // Platzhalter-Silhouette
     const k = fig.kind ? 0.85 : 1;
     s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f5f5f5"/>`;
@@ -430,7 +433,7 @@ function figurPanel(fig, w, h) {
     s += `<circle cx="${cx + 6.5 * k}" cy="${kopfY - 9.5 * k}" r="${1.5 * k}" fill="#fff" stroke="#ddd" stroke-width="0.2"/></g>`;
   }
   if (fig.stern) s += emoSvg('⭐', w - 5, 5, 7);
-  s += emoSvg('❄️', 4.5, 4.5, 4);
+  if (!foto) s += emoSvg('❄️', 4.5, 4.5, 4);
   const fs_ = fig.name.length > 6 ? 4.6 : 5.4;
   s += `<rect x="2.5" y="${h - 13}" width="${w - 5}" height="9" rx="2.5" fill="#fff"/>`;
   s += `<text x="${cx}" y="${h - 6.8}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="${fig.farbe}">${esc(fig.name)}</text>`;
