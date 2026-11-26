@@ -25,6 +25,21 @@ Die PDF-Version ist RGB. Ein „echtes“ Druck-PDF (PDF/X-4, CMYK, ISO Coated v
 
 **Pflichtangaben:** meinspiel.de druckt standardmäßig CE-Zeichen/Herstellerangaben. Für ein privates Geschenk kann man per E-Mail an info@meinspiel.de darauf verzichten („Hiermit erkläre ich, dass ich beim Druck des o.g. Auftrags auf einzelne oder alle Elemente der CE- und Anbieterkennzeichnung verzichte.“).
 
+## Schachtel für meinspiel.de (Brettspiel-Box)
+
+Nach dem [Gestaltungsleitfaden Stülpdeckelschachtel 308 × 217 × 35 mm](https://www.meinspiel.de/gestaltungsleitfaden-stuelpdeckelschachtel-brettspiel-format-308x217x35-mm/):
+
+| Vorgabe | Umsetzung |
+|---|---|
+| Druckbogen 410 × 320 mm (4843 × 3780 px bei 300 dpi) | ✔ `00_meinspiel_Schachtel_410x320mm.png` |
+| Deckelfläche 308,5 × 217,5 mm, vier Seitenflächen à 29 mm | ✔ Titel und Susi auf dem Deckel, Titelband auf allen vier Seiten (richtig herum ausgerichtet) |
+| Hintergrund bis zum Rand, keine Stanz-/Falzlinien in den Druckdaten | ✔ |
+| Wichtige Elemente mind. 3 mm Abstand zur Stanzkontur | ✔ (geprüft mit den Linien der offiziellen Vorlage) |
+| JPG/PNG: RGB, sRGB, 300 dpi | ✔ |
+
+`00_meinspiel_Schachtel_KONTROLLANSICHT_nicht_drucken.png` zeigt Stanzlinie (pink) und Falz (grün) – **nicht** hochladen.
+Pflichtangaben (CE, Warnhinweis, Hersteller) sind nicht enthalten – für ein privates Geschenk per E-Mail an meinspiel.de darauf verzichten (siehe oben).
+
 ## Druckvorlagen (Ordner `druck/`)
 
 | Datei | Inhalt | Druck |

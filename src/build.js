@@ -822,13 +822,82 @@ function deckelDatei() {
 }
 
 // ======================================================================
+// SCHACHTEL für meinspiel.de (Stülpdeckelschachtel, Druckbogen 410 x 320 mm)
+// ======================================================================
+function schachtelDatei(kontrolle) {
+  const DW = 410, DH = 320;
+  const deckel = { x: 50.8, y: 51.3, w: 308.3, h: 217.3 };
+  const flaechen = [
+    { x: 50.8, y: 18.0, w: 308.3, h: 25.9, rot: 180 },
+    { x: 50.8, y: 276.0, w: 308.3, h: 25.9, rot: 0, front: true },
+    { x: 17.6, y: 51.3, w: 25.8, h: 217.3, rot: 90 },
+    { x: 366.5, y: 51.3, w: 25.8, h: 217.3, rot: -90 },
+  ];
+  const css = `@page{size:${DW}mm ${DH}mm;margin:0}
+  body{margin:0}
+  .page{width:${DW}mm;height:${DH}mm;background-size:cover;background-position:center;position:relative;overflow:hidden}
+  .deckel{position:absolute;left:${deckel.x}mm;top:${deckel.y}mm;width:${deckel.w}mm;height:${deckel.h}mm;display:flex;align-items:center;justify-content:center}
+  .rahmen{position:absolute;inset:6mm;border:1.2mm solid #d4a537;border-radius:7mm}
+  .rahmen2{position:absolute;inset:8.5mm;border:0.35mm solid #f0d48a;border-radius:5mm}
+  .inhalt{display:grid;grid-template-columns:104mm 1fr;gap:10mm;align-items:center;width:284mm;margin-top:-8mm}
+  .susi{width:104mm;height:104mm;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 2mm #d4a537,0 0 0 4mm #fbf4e6,0 0 0 4.6mm #d4a537,0 3mm 8mm rgba(20,40,80,.4)}
+  .karte{background:rgba(251,244,230,.95);border-radius:6mm;padding:9mm 7mm;box-shadow:0 0 0 0.7mm #d4a537,0 2mm 6mm rgba(20,40,80,.3);text-align:center}
+  .t1{font-family:'DM Serif Display',serif;font-size:16mm;color:#c8102e;line-height:1}
+  .t1 i{font-style:italic;color:#b8862b;font-size:13.5mm}
+  .t2{font-family:'DM Serif Display',serif;font-size:19.5mm;color:#1f6b4a;line-height:1.05}
+  .unter{font-family:'DM Serif Display',serif;font-style:italic;font-size:6.8mm;color:#7a6a4f;margin-top:1.5mm}
+  .reihe{display:flex;gap:2.5mm;justify-content:center;margin:6mm 0 5mm}
+  .reihe div{width:17mm;height:17mm;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff 0,#eef2f8 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.8mm var(--f),0 0 0 1.4mm #d4a537}
+  .info{font-family:Fredoka;font-weight:500;font-size:5mm;color:#1f6b4a}
+  .emo{display:block}
+  .qrbox{position:absolute;right:13mm;bottom:13mm;background:rgba(251,244,230,.96);border-radius:4mm;padding:2.5mm;text-align:center;box-shadow:0 0 0 0.6mm #d4a537,0 1.5mm 4mm rgba(20,40,80,.3)}
+  .qrbox .q{background:#fff;padding:1.5mm;border-radius:1.5mm}
+  .qrbox span{display:block;font-family:Fredoka;font-weight:600;font-size:3mm;color:#1f6b4a;margin-top:1.2mm}
+  .flaeche{position:absolute;display:flex;align-items:center;justify-content:center}
+  .band{display:flex;align-items:center;justify-content:center;gap:5mm;background:rgba(251,244,230,.95);border-radius:4mm;box-shadow:0 0 0 0.6mm #d4a537;padding:0 7mm;height:15mm;white-space:nowrap}
+  .band .bt{font-family:'DM Serif Display',serif;font-size:7.5mm;color:#1f6b4a}
+  .band .bt b{font-weight:400;color:#c8102e}.band .bt i{color:#b8862b}
+  .band .bi{font-family:Fredoka;font-weight:500;font-size:3.6mm;color:#7a6a4f}
+  .linien{position:absolute;inset:0;width:100%;height:100%}
+  .lbl{position:absolute;font-family:Nunito;font-weight:800;font-size:3.4mm;color:#fff;background:rgba(200,0,150,.85);padding:0.5mm 1.5mm;border-radius:1mm}`;
+  const band = front => `<div class="band">${stechpalmeHtml(10)}<span class="bt"><b>Susis</b> <i>perfektes</i> Weihnachtsdinner</span>${front ? '<span class="bi">2–6 Personen · bis 10 im Team · ab 7 Jahren</span>' : ''}${stechpalmeHtml(10)}</div>`;
+  const flHtml = flaechen.map(f => {
+    const quer = Math.abs(f.rot) === 90, L = quer ? f.h : f.w, Hh = quer ? f.w : f.h;
+    return `<div class="flaeche" style="left:${f.x + f.w / 2 - L / 2}mm;top:${f.y + f.h / 2 - Hh / 2}mm;width:${L}mm;height:${Hh}mm;transform:rotate(${f.rot}deg)">${band(f.front)}</div>`;
+  }).join('');
+  const linienDatei = path.join(ROOT, 'assets/meinspiel_box_linien.png');
+  const linien = kontrolle && fs.existsSync(linienDatei)
+    ? `<img class="linien" src="${assetDaten(linienDatei)}">` +
+      [[deckel.x + 3, deckel.y + 3, 'Deckel 308,5 × 217,5 mm'], [52, 19, 'Seite hinten'], [52, 277, 'Seite vorne'], [18.5, 52, 'Seite'], [367.5, 52, 'Seite'], [2, 2, 'Druckbogen 410 × 320 mm · pink = Stanzlinie, grün = Falz']]
+        .map(([x, y, t]) => `<div class="lbl" style="left:${x}mm;top:${y}mm">${t}</div>`).join('') : '';
+  const body = `<div class="page" style="background-image:url(${bildUri('hintergrund.jpg') || ''})">
+    <div class="deckel"><div class="rahmen"></div><div class="rahmen2"></div>
+      <div class="inhalt">
+        <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
+        <div class="karte">
+          <div class="t1">Susis <i>perfektes</i></div><div class="t2">Weihnachtsdinner</div>
+          <div class="unter">${esc(D.untertitel)}</div>
+          <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 11.5)}</div>`).join('')}</div>
+          <div class="info">2–6 Personen · bis 10 im Team · ab 7 Jahren · ca. 30–45 Minuten</div>
+        </div>
+      </div>
+      ${QR_SVG ? `<div class="qrbox"><div class="q">${qrHtml(20)}</div><span>Online spielen</span></div>` : ''}
+    </div>
+    ${flHtml}${linien}
+  </div>`;
+  return kontrolle
+    ? { name: '00_meinspiel_Schachtel_KONTROLLANSICHT_nicht_drucken', html: htmlDoc('Schachtel Kontrolle', css, body), png: { mm: DW, mmH: DH, px: 2422, pxH: 1890 }, keinPdf: true }
+    : { name: '00_meinspiel_Schachtel_410x320mm', html: htmlDoc('Schachtel meinspiel', css, body), png: { mm: DW, mmH: DH, px: 4843, pxH: 3780 } };
+}
+
+// ======================================================================
 let QR_SVG = '';
 const qrHtml = mm => `<div style="width:${mm}mm;height:${mm}mm">${QR_SVG.replace('<svg ', '<svg style="width:100%;height:100%;display:block" ')}</div>`;
 async function main() {
   QR_SVG = D.onlineLink ? await require('qrcode').toString(D.onlineLink, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#1f4d38', light: '#ffffff' } }) : '';
   assetsRegistrieren();
   const sl = suchlistenDatei();
-  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei()];
+  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei(), schachtelDatei(false), schachtelDatei(true)];
   const browser = await chromium.launch();
   const page = await browser.newPage();
   for (const d of dateien) {
@@ -842,15 +911,15 @@ async function main() {
     }
     if (d.png) {
       // Rasterbild in exakter Pixelgröße (z. B. 3780 x 3780 px = 320 mm bei 300 dpi)
-      const css = (d.png.mm * 96) / 25.4;
-      const ctx = await browser.newContext({ viewport: { width: Math.ceil(css), height: Math.ceil(css) }, deviceScaleFactor: d.png.px / css });
+      const css = (d.png.mm * 96) / 25.4, cssH = ((d.png.mmH || d.png.mm) * 96) / 25.4;
+      const ctx = await browser.newContext({ viewport: { width: Math.ceil(css), height: Math.ceil(cssH) }, deviceScaleFactor: d.png.px / css });
       const p2 = await ctx.newPage();
       await p2.goto('file://' + htmlPfad, { waitUntil: 'load' });
       await p2.evaluate(() => document.fonts.ready);
       const ziel = path.join(DRUCK, d.name + '.png');
-      await p2.screenshot({ path: ziel, clip: { x: 0, y: 0, width: css, height: css } });
+      await p2.screenshot({ path: ziel, clip: { x: 0, y: 0, width: css, height: cssH } });
       await ctx.close();
-      require('child_process').execFileSync('python3', ['-I', path.join(ROOT, 'tools/png_fertig.py'), ziel, String(d.png.px)]);
+      require('child_process').execFileSync('python3', ['-I', path.join(ROOT, 'tools/png_fertig.py'), ziel, String(d.png.px), String(d.png.pxH || d.png.px)]);
       console.log('✔', d.name + '.png');
     }
   }
