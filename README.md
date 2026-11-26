@@ -4,6 +4,27 @@ Ein selbstgemachtes Familien-Brettspiel für 2–6 Spieler, im Team-Modus für b
 
 Es ist der 24. Dezember, und Susi, bekannt für ihre Kochpartys, will das beste Weihnachtsessen der Welt kochen. Alle helfen beim Einkaufen im Weihnachtsdorf: Erdäpfel, Maroni, Eier, Kipferl, Kinderpunsch und Co. für ein echtes österreichisches Weihnachtsmenü. Wer zuerst alle 4 Zutaten von seiner Einkaufsliste in Susis Weihnachtsküche bringt, gewinnt. Mit der Variante „Gemeinsam bis Heiligabend“ spielen alle zusammen gegen den Adventskalender.
 
+## Spielbrett professionell drucken lassen (meinspiel.de, 300 × 300 mm)
+
+Vorlage nach dem [Gestaltungsleitfaden 300 × 300 mm](https://www.meinspiel.de/gestaltungsleitfaden-brettspiele-format-300x300-mm/):
+
+| Vorgabe von meinspiel.de | Umsetzung |
+|---|---|
+| Dateigröße 320 × 320 mm (3780 × 3780 px bei 300 dpi) | ✔ `00_meinspiel_Spielbrett_300x300mm.png` hat genau 3780 × 3780 px, 300 dpi |
+| Spielbrett-Endformat 300 × 300 mm, rundum 10 mm Umschlag und Beschnitt | ✔ Hintergrund läuft durchgehend bis zum Dateirand (keine „Blitzer“) |
+| Wichtige Elemente mindestens 5 mm vom Brettrand (gestaltbarer Bereich 290 × 290 mm) | ✔ alle Felder, Orte und Texte liegen innerhalb |
+| Keine Schnittmarken, Linien oder Brettumrisse | ✔ keine vorhanden |
+| JPG/PNG: RGB, sRGB, mind. 300 dpi, unkomprimiert | ✔ PNG (verlustfrei), sRGB-Profil eingebettet |
+| Schrift mind. 6 pt, Linien mind. 0,18 mm | ✔ kleinste Schrift ≈ 7,5 pt |
+| Falzung vertikal (Brettmitte) | Die Falz läuft durch die Bäckerei, die Mitte und die Kirche. Dort steht keine kleine Schrift, nur der Name in der Mitte wird gefaltet (wie bei gekauften Brettspielen üblich). |
+
+**Welche Datei hochladen?** Für eine Online-Bestellung (bis ca. 100 Stück) `00_meinspiel_Spielbrett_300x300mm.png` im Konfigurator hochladen.
+Die PDF-Version ist RGB. Ein „echtes“ Druck-PDF (PDF/X-4, CMYK, ISO Coated v2 300 % ECI) verlangt meinspiel.de nur für PDF-Uploads – dafür bräuchte man InDesign/Illustrator oder einen Druckdatenservice. Das PNG ist laut Leitfaden ausdrücklich erlaubt.
+
+`00_meinspiel_KONTROLLANSICHT_nicht_drucken.png` zeigt Beschnitt (pink), Brettkante (türkis), Sicherheitsabstand (gelb) und Falz (rot) – nur zur Kontrolle, **nicht** hochladen.
+
+**Pflichtangaben:** meinspiel.de druckt standardmäßig CE-Zeichen/Herstellerangaben. Für ein privates Geschenk kann man per E-Mail an info@meinspiel.de darauf verzichten („Hiermit erkläre ich, dass ich beim Druck des o.g. Auftrags auf einzelne oder alle Elemente der CE- und Anbieterkennzeichnung verzichte.“).
+
 ## Druckvorlagen (Ordner `druck/`)
 
 | Datei | Inhalt | Druck |

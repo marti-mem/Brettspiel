@@ -46,6 +46,7 @@ const BASIS_CSS = `
 @font-face{font-family:Fredoka;font-weight:500;src:url(${fontUrl('fredoka/files/fredoka-latin-500-normal.woff2')})}
 @font-face{font-family:Fredoka;font-weight:600;src:url(${fontUrl('fredoka/files/fredoka-latin-600-normal.woff2')})}
 @font-face{font-family:Fredoka;font-weight:700;src:url(${fontUrl('fredoka/files/fredoka-latin-700-normal.woff2')})}
+@font-face{font-family:'DM Serif Display';font-weight:400;src:url(${fontUrl('dm-serif-display/files/dm-serif-display-latin-400-normal.woff2')})}
 @font-face{font-family:Nunito;font-weight:400;src:url(${fontUrl('nunito/files/nunito-latin-400-normal.woff2')})}
 @font-face{font-family:Nunito;font-weight:700;src:url(${fontUrl('nunito/files/nunito-latin-700-normal.woff2')})}
 @font-face{font-family:Nunito;font-weight:800;src:url(${fontUrl('nunito/files/nunito-latin-800-normal.woff2')})}
@@ -112,71 +113,110 @@ function planGeometrie() {
 // einfacher, reproduzierbarer Zufall für die Wiese
 function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646; }
 
+// ---------- Modernes Weihnachtsdesign ----------
+const P = {
+  gruen1: '#215f48', gruen2: '#123d2f', creme: '#fbf4e6', creme2: '#f3e6cc',
+  gold: '#d4a537', goldHell: '#f0d48a', rot: '#c8102e', rotDunkel: '#9e0c24', tanne: '#1f6b4a',
+};
+const SERIF = "'DM Serif Display', serif";
+
+// Hintergrund (Tannengrün mit Schneegestöber), füllt w x h ab (x0, y0)
+function planHintergrund(x0, y0, w, h, seed = 11) {
+  const id = 'bg' + seed;
+  let s = `<defs><radialGradient id="${id}" cx="50%" cy="50%" r="72%"><stop offset="0" stop-color="${P.gruen1}"/><stop offset="1" stop-color="${P.gruen2}"/></radialGradient></defs>`;
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="url(#${id})"/>`;
+  const r = rng(seed);
+  const n = Math.round((w * h) / 260);
+  for (let i = 0; i < n; i++) {
+    const x = x0 + r() * w, y = y0 + r() * h, g = 0.35 + r() * 0.9;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${g.toFixed(2)}" fill="#ffffff" opacity="${(0.12 + r() * 0.28).toFixed(2)}"/>`;
+  }
+  for (let i = 0; i < n / 14; i++) {
+    const x = x0 + r() * w, y = y0 + r() * h, g = 1.6 + r() * 2.2;
+    s += `<path d="${stern4(x, y, g)}" fill="${P.goldHell}" opacity="${(0.35 + r() * 0.35).toFixed(2)}"/>`;
+  }
+  return s;
+}
+// vierzackiger Funkelstern
+function stern4(x, y, r) {
+  const q = r * 0.28;
+  return `M${x} ${y - r} Q${x + q} ${y - q} ${x + r} ${y} Q${x + q} ${y + q} ${x} ${y + r} Q${x - q} ${y + q} ${x - r} ${y} Q${x - q} ${y - q} ${x} ${y - r}Z`;
+}
+// fünfzackiger Stern
+function stern5(x, y, ra, ri = ra * 0.45) {
+  let d = '';
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? ri : ra;
+    d += (i ? 'L' : 'M') + (x + Math.cos(a) * rr).toFixed(2) + ' ' + (y + Math.sin(a) * rr).toFixed(2);
+  }
+  return d + 'Z';
+}
+// Stechpalmen-Zweig
+function stechpalme(x, y, s = 1, rot = 0) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">
+    <path d="M0 0 C-6 -3 -12 -2 -16 -7 C-12 -6 -11 -10 -7 -9 C-6 -12 -2 -11 0 0Z" fill="${P.tanne}"/>
+    <path d="M0 0 C6 -3 12 -2 16 -7 C12 -6 11 -10 7 -9 C6 -12 2 -11 0 0Z" fill="#2e8a5f"/>
+    <circle cx="-2.2" cy="-1.5" r="2.3" fill="${P.rot}"/><circle cx="2.2" cy="-1.5" r="2.3" fill="${P.rot}"/><circle cx="0" cy="-4.2" r="2.3" fill="#e2263f"/>
+  </g>`;
+}
+
 function planInhalt() {
   const { ring, speichen } = planGeometrie();
   let s = '';
-  // Hintergrund: verschneite Winterlandschaft
-  s += `<defs>
-    <radialGradient id="schnee" cx="50%" cy="50%" r="72%"><stop offset="0" stop-color="#f7fbff"/><stop offset="1" stop-color="#cfe3f3"/></radialGradient>
-  </defs>`;
-  s += `<rect x="0" y="0" width="${B}" height="${B}" fill="url(#schnee)"/>`;
-  const r = rng(11);
-  const flocke = (x, y, g, op) => {
-    let p = '';
-    for (let k = 0; k < 3; k++) {
-      const a = (k * Math.PI) / 3, dx = Math.cos(a) * g, dy = Math.sin(a) * g;
-      p += `M${(x - dx).toFixed(1)} ${(y - dy).toFixed(1)} L${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)} `;
-    }
-    return `<path d="${p}" stroke="#9cc3e2" stroke-width="${(g / 6).toFixed(2)}" stroke-linecap="round" opacity="${op}"/>`;
-  };
-  for (let i = 0; i < 260; i++) s += flocke(r() * B, r() * B, 1 + r() * 2.6, (0.35 + r() * 0.45).toFixed(2));
-  s += `<rect x="3" y="3" width="${B - 6}" height="${B - 6}" rx="10" fill="none" stroke="#b71c1c" stroke-width="3.2"/>`;
-  s += `<rect x="6.5" y="6.5" width="${B - 13}" height="${B - 13}" rx="8" fill="none" stroke="#e6a100" stroke-width="0.8" stroke-dasharray="3 2"/>`;
 
-  // Wege (verschneiter Pfad)
+  // Weg: goldener Rand, cremefarbenes Band
   const ringPfad = 'M' + ring.map(f => `${f.x} ${f.y}`).join(' L') + ' Z';
   const speichenPfad = speichen.map(sp => `M${sp.von.x} ${sp.von.y} L${C.x} ${C.y}`).join(' ');
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#8fb0c9" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>`;
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#ffffff" stroke-width="19" stroke-linejoin="round" stroke-linecap="round"/>`;
-  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#c9dcec" stroke-width="0.7" stroke-dasharray="1.5 3" stroke-linejoin="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="25" stroke-linejoin="round" transform="translate(0 1.2)"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.gold}" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.creme}" stroke-width="20.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<path d="${ringPfad} ${speichenPfad}" fill="none" stroke="${P.gold}" stroke-opacity="0.55" stroke-width="0.6" stroke-dasharray="0.1 3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 
-  const kasten = (cx, cy) => `<rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="14" fill="#ffffff" opacity="0.75" stroke="#c62828" stroke-width="0.6"/>`;
-  // Titel (zweimal, gedreht, damit man von beiden Seiten lesen kann)
+  // Karten-Felder in den vier Vierteln
+  const kasten = (cx, cy) => `<rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="12" fill="#000" opacity="0.22" transform="translate(0 1.5)"/>
+    <rect x="${cx - 58}" y="${cy - 50}" width="116" height="100" rx="12" fill="${P.creme}"/>
+    <rect x="${cx - 55}" y="${cy - 47}" width="110" height="94" rx="9.5" fill="none" stroke="${P.gold}" stroke-width="0.7"/>`;
+
   const titelBlock = (cx, cy, rot) => `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}
-    ${emoSvg('🎄', cx - 42, cy - 35, 13)}${emoSvg('⭐', cx + 43, cy - 37, 9)}${emoSvg('🎅', cx - 43, cy + 36, 11)}${emoSvg('❄️', cx + 44, cy + 37, 9)}
-    <text x="${cx}" y="${cy - 17}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="17" fill="#c62828">${esc(D.titelZeilen[0])}</text>
-    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="14.5" fill="#1b5e20">${esc(D.titelZeilen[1])}</text>
-    <text x="${cx}" y="${cy + 20}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="14.5" fill="#b8860b">${esc(D.titelZeilen[2])}</text>
-    ${emoSvg('✨', cx, cy + 36, 10)}
+    ${stechpalme(cx - 40, cy - 32, 0.85, -18)}${stechpalme(cx + 40, cy + 38, 0.85, 162)}
+    <path d="${stern5(cx + 41, cy - 35, 4.2)}" fill="${P.gold}"/><path d="${stern4(cx - 43, cy + 33, 3.2)}" fill="${P.gold}"/>
+    <text x="${cx}" y="${cy - 17}" text-anchor="middle" font-family="${SERIF}" font-size="17" fill="${P.rot}">${esc(D.titelZeilen[0])}</text>
+    <text x="${cx}" y="${cy + 2}" text-anchor="middle" font-family="${SERIF}" font-size="15.5" fill="${P.tanne}">${esc(D.titelZeilen[1])}</text>
+    <text x="${cx}" y="${cy + 19}" text-anchor="middle" font-family="${SERIF}" font-size="15.5" fill="${P.tanne}">${esc(D.titelZeilen[2])}</text>
+    <line x1="${cx - 22}" y1="${cy + 25.5}" x2="${cx + 22}" y2="${cy + 25.5}" stroke="${P.gold}" stroke-width="0.6"/>
+    <text x="${cx}" y="${cy + 32}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="4.3" letter-spacing="0.25" fill="#7a6a4f">${esc((D.untertitel || '').toUpperCase())}</text>
   </g>`;
-  // Adventskalender (für die Gemeinsam-Variante)
+
   const kalender = (cx, cy) => {
     let g = kasten(cx, cy);
-    g += `<text x="${cx}" y="${cy - 36}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="7.5" fill="#c62828">Adventskalender</text>`;
-    const farben = ['#c62828', '#2e7d32', '#e6a100'];
+    g += `<text x="${cx}" y="${cy - 34}" text-anchor="middle" font-family="${SERIF}" font-size="9" fill="${P.rot}">Adventskalender</text>`;
+    const farben = [P.rot, P.tanne, P.gold];
     const reihen = [[7, 15, 3, 21, 11, 18], [24, 1, 9, 13, 5, 20], [12, 17, 22, 2, 16, 8], [4, 19, 10, 6, 23, 14]];
     reihen.forEach((reihe, ri) => reihe.forEach((n, ci) => {
-      const x = cx - 48 + ci * 16, y = cy - 30 + ri * 15;
-      const f = n === 24 ? '#b71c1c' : farben[(ri + ci) % 3];
-      g += `<rect x="${x + 0.6}" y="${y + 0.6}" width="14.8" height="13.8" rx="2.4" fill="${f}" stroke="${n === 24 ? '#ffd54f' : '#fff'}" stroke-width="${n === 24 ? 1.2 : 0.7}"/>`;
-      g += `<text x="${x + 8}" y="${y + 10}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="${n === 24 ? 7.5 : 6.5}" fill="#fff">${n}</text>`;
+      const x = cx - 48 + ci * 16, y = cy - 28 + ri * 15;
+      const f = n === 24 ? P.rotDunkel : farben[(ri + ci) % 3];
+      g += `<rect x="${x + 0.7}" y="${y + 0.7}" width="14.6" height="13.6" rx="3" fill="${f}"/>`;
+      if (n === 24) g += `<rect x="${x + 1.6}" y="${y + 1.6}" width="12.8" height="11.8" rx="2.4" fill="none" stroke="${P.goldHell}" stroke-width="0.7"/>`;
+      g += `<text x="${x + 8}" y="${y + 10.2}" text-anchor="middle" font-family="${SERIF}" font-size="${n === 24 ? 8 : 7}" fill="${n === 24 ? P.goldHell : '#fff'}">${n}</text>`;
     }));
-    g += `<text x="${cx}" y="${cy + 43}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="3.6" fill="#555">für das Spiel „Gemeinsam bis Heiligabend“</text>`;
+    g += `<text x="${cx}" y="${cy + 43}" text-anchor="middle" font-family="Nunito" font-weight="700" font-size="3.7" fill="#7a6a4f">für das Spiel „Gemeinsam bis Heiligabend“</text>`;
     return g;
   };
+
   const legende = (cx, cy, rot) => {
+    const o = D.orte[7];
     const zeilen = [
-      { icon: `<circle cx="0" cy="0" r="7" fill="#ffd54f" stroke="#8fb0c9" stroke-width="0.8"/>${emoSvg('⭐', 0, 0, 9)}`, t1: 'Sternfeld', t2: D.kartenName + ' ziehen' },
-      { icon: `<circle cx="0" cy="0" r="7" fill="${D.orte[7].farbe}"/><circle cx="0" cy="0" r="4.6" fill="#fff"/>${emoSvg(D.orte[7].ding.emoji, 0, 0, 7)}`, t1: 'Ort', t2: 'Zutat einsammeln' },
-      { icon: `<circle cx="0" cy="0" r="7" fill="#fff3e0" stroke="#c62828" stroke-width="0.8"/>${emoSvg(D.zentrum.emoji, 0, 0, 9)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
+      { icon: `<circle r="7" fill="${P.rot}"/><path d="${stern5(0, 0.4, 4.6)}" fill="${P.goldHell}"/>`, t1: 'Sternfeld', t2: D.kartenName + ' ziehen' },
+      { icon: `<circle r="7" fill="#fff" stroke="${o.farbe}" stroke-width="1.6"/>${emoSvg(o.ding.emoji, 0, 0, 8)}`, t1: 'Ort', t2: 'Zutat einsammeln' },
+      { icon: `<circle r="7" fill="${P.creme2}" stroke="${P.gold}" stroke-width="1"/>${emoSvg(D.zentrum.emoji, 0, 0, 8.5)}`, t1: D.zentrum.name, t2: 'Start und Ziel' },
     ];
     let g = `<g transform="rotate(${rot} ${cx} ${cy})">${kasten(cx, cy)}`;
-    g += `<text x="${cx}" y="${cy - 33}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="7.5" fill="#1b5e20">So geht's</text>`;
+    g += `<text x="${cx}" y="${cy - 31}" text-anchor="middle" font-family="${SERIF}" font-size="9" fill="${P.tanne}">So geht's</text>`;
     zeilen.forEach((z, i) => {
       const y = cy - 15 + i * 21, x = cx - 44;
       g += `<g transform="translate(${x} ${y})">${z.icon}</g>`;
-      g += `<text x="${x + 12}" y="${y - 1}" font-family="Fredoka" font-weight="600" font-size="5.4" fill="#333">${esc(z.t1)}</text>`;
-      g += `<text x="${x + 12}" y="${y + 5.5}" font-family="Nunito" font-weight="700" font-size="4.6" fill="#555">${esc(z.t2)}</text>`;
+      g += `<text x="${x + 12}" y="${y - 1}" font-family="Fredoka" font-weight="600" font-size="5.4" fill="#2b2b2b">${esc(z.t1)}</text>`;
+      g += `<text x="${x + 12}" y="${y + 5.5}" font-family="Nunito" font-weight="700" font-size="4.5" fill="#6b5d45">${esc(z.t2)}</text>`;
     });
     return g + '</g>';
   };
@@ -184,12 +224,16 @@ function planInhalt() {
 
   // Felder
   const feld = f => {
+    let g = `<circle cx="${f.x}" cy="${f.y + 0.8}" r="${R_FELD}" fill="#000" opacity="0.18"/>`;
     if (f.typ === 'stern') {
-      return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#ffd54f" stroke="#b8860b" stroke-width="1"/>` +
-        `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2}" fill="none" stroke="#fff3c4" stroke-width="0.8"/>` + emoSvg('⭐', f.x, f.y, 16);
+      g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="${P.rot}" stroke="${P.gold}" stroke-width="1.3"/>`;
+      g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2.6}" fill="none" stroke="${P.goldHell}" stroke-width="0.5" stroke-dasharray="0.1 1.6" stroke-linecap="round"/>`;
+      g += `<path d="${stern5(f.x, f.y + 0.6, 8)}" fill="${P.goldHell}"/>`;
+      return g;
     }
-    return `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#ffffff" stroke="#6f97b8" stroke-width="1"/>` +
-      `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2}" fill="none" stroke="#dce9f4" stroke-width="0.8"/>`;
+    g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD}" fill="#fffdf8" stroke="${P.gold}" stroke-width="1.3"/>`;
+    g += `<circle cx="${f.x}" cy="${f.y}" r="${R_FELD - 2.6}" fill="none" stroke="${P.creme2}" stroke-width="0.8"/>`;
+    return g;
   };
   ring.filter(f => f.typ !== 'ort').forEach(f => (s += feld(f)));
   speichen.forEach(sp => sp.felder.forEach(f => (s += feld(f))));
@@ -197,34 +241,76 @@ function planInhalt() {
   // Orte
   ring.filter(f => f.typ === 'ort').forEach(f => {
     const o = f.ort;
-    s += `<circle cx="${f.x}" cy="${f.y + 0.8}" r="${R_ORT}" fill="#000" opacity="0.18"/>`;
-    s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT}" fill="${o.farbe}" stroke="#fff" stroke-width="1.2"/>`;
-    s += `<circle cx="${f.x}" cy="${f.y - 4}" r="15.5" fill="#fff"/>`;
-    s += emoSvg(o.emoji, f.x, f.y - 4, 21);
-    const fs_ = o.name.length > 12 ? 3.6 : o.name.length > 9 ? 4.2 : 4.8;
-    s += `<text x="${f.x}" y="${f.y + 18.6}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="#fff">${esc(o.name)}</text>`;
-    // Gegenstand-Abzeichen schräg oben, weg vom Namen
+    s += `<circle cx="${f.x}" cy="${f.y + 1.2}" r="${R_ORT + 1}" fill="#000" opacity="0.25"/>`;
+    s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT + 1}" fill="${P.gold}"/>`;
+    s += `<circle cx="${f.x}" cy="${f.y}" r="${R_ORT - 0.6}" fill="${o.farbe}"/>`;
+    s += `<circle cx="${f.x}" cy="${f.y - 3}" r="17.2" fill="#fffdf8"/>`;
+    s += emoSvg(o.emoji, f.x, f.y - 3.5, 22);
+    const fs_ = o.name.length > 10 ? 4.3 : 4.8;
+    const bw = Math.max(34, o.name.length * fs_ * 0.56 + 9);
+    s += `<rect x="${f.x - bw / 2}" y="${f.y + 13.2}" width="${bw}" height="8.6" rx="4.3" fill="${o.farbe}" stroke="${P.gold}" stroke-width="0.8"/>`;
+    s += `<text x="${f.x}" y="${f.y + 19.1}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="#fff">${esc(o.name)}</text>`;
     const a = ((f.x < 200 ? -135 : -45) * Math.PI) / 180;
-    const bx = f.x + Math.cos(a) * 25, by = f.y + Math.sin(a) * 25;
-    s += `<circle cx="${bx}" cy="${by + 0.5}" r="8.6" fill="#000" opacity="0.18"/>`;
-    s += `<circle cx="${bx}" cy="${by}" r="8.6" fill="#fff" stroke="${o.farbe}" stroke-width="1.4"/>`;
-    s += emoSvg(o.ding.emoji, bx, by, 11);
+    const bx = f.x + Math.cos(a) * 25.5, by = f.y + Math.sin(a) * 25.5;
+    s += `<circle cx="${bx}" cy="${by + 0.6}" r="9" fill="#000" opacity="0.22"/>`;
+    s += `<circle cx="${bx}" cy="${by}" r="9" fill="#fffdf8" stroke="${P.gold}" stroke-width="1.4"/>`;
+    s += emoSvg(o.ding.emoji, bx, by, 11.5);
   });
 
-  // Zentrum (Start & Ziel)
-  s += `<circle cx="${C.x}" cy="${C.y + 1}" r="${R_ZIMMER}" fill="#000" opacity="0.18"/>`;
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER}" fill="#fff3e0" stroke="#c62828" stroke-width="1.8"/>`;
-  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 3}" fill="none" stroke="#e6a100" stroke-width="0.8" stroke-dasharray="2 2"/>`;
-  s += emoSvg(D.zentrum.emoji, C.x - 3, C.y - 11, 30) + emoSvg(D.zentrum.deko, C.x + 17, C.y - 4, 15);
-  s += `<text x="${C.x}" y="${C.y + 13}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[0])}</text>`;
-  s += `<text x="${C.x}" y="${C.y + 20}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="6.2" fill="#b71c1c">${esc(D.zentrum.kurz[1])}</text>`;
-  s += `<text x="${C.x}" y="${C.y + 27}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.8" fill="#2e7d32">START &amp; ZIEL</text>`;
+  // Zentrum mit Adventskranz
+  s += `<circle cx="${C.x}" cy="${C.y + 1.5}" r="${R_ZIMMER + 5}" fill="#000" opacity="0.25"/>`;
+  const kranz = rng(5);
+  for (let i = 0; i < 64; i++) {
+    const a = (i / 64) * Math.PI * 2, rr = R_ZIMMER + 1.5 + (kranz() - 0.5) * 3;
+    const x = C.x + Math.cos(a) * rr, y = C.y + Math.sin(a) * rr;
+    const farbe = [P.tanne, '#2e8a5f', '#17573b'][i % 3];
+    s += `<ellipse cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="5.2" ry="2.1" fill="${farbe}" transform="rotate(${((a * 180) / Math.PI + 90 + (kranz() - 0.5) * 70).toFixed(1)} ${x.toFixed(2)} ${y.toFixed(2)})"/>`;
+  }
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2 + 0.2, rr = R_ZIMMER + 2.5;
+    s += `<circle cx="${(C.x + Math.cos(a) * rr).toFixed(2)}" cy="${(C.y + Math.sin(a) * rr).toFixed(2)}" r="1.6" fill="${i % 2 ? P.rot : P.goldHell}"/>`;
+  }
+  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 2}" fill="${P.creme}" stroke="${P.gold}" stroke-width="1.4"/>`;
+  s += `<circle cx="${C.x}" cy="${C.y}" r="${R_ZIMMER - 5}" fill="none" stroke="${P.gold}" stroke-width="0.5"/>`;
+  s += emoSvg(D.zentrum.emoji, C.x - 4, C.y - 12, 27) + emoSvg(D.zentrum.deko, C.x + 14, C.y - 6, 14);
+  s += `<text x="${C.x}" y="${C.y + 11}" text-anchor="middle" font-family="${SERIF}" font-size="7.2" fill="${P.rot}">${esc(D.zentrum.kurz[0])}</text>`;
+  s += `<text x="${C.x}" y="${C.y + 18.5}" text-anchor="middle" font-family="${SERIF}" font-size="6.6" fill="${P.rot}">${esc(D.zentrum.kurz[1])}</text>`;
+  s += `<rect x="${C.x - 14}" y="${C.y + 22}" width="28" height="6.4" rx="3.2" fill="${P.tanne}"/>`;
+  s += `<text x="${C.x}" y="${C.y + 26.4}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3.5" letter-spacing="0.3" fill="${P.goldHell}">START &amp; ZIEL</text>`;
+  return s;
+}
+
+// Plan in 400er-Koordinaten inkl. Hintergrund (für die Heimdruck-Versionen)
+function planMitHintergrund() {
+  return planHintergrund(0, 0, B, B) + planInhalt();
+}
+
+// Druckdaten für meinspiel.de (Spielbrett 300 x 300 mm, Datei 320 x 320 mm inkl. 10 mm Umschlag/Beschnitt)
+const MS = { brett: 300, rand: 10, sicher: 5 };
+function planMeinspielSvg(kontrolle = false) {
+  const D_ = MS.brett + 2 * MS.rand, k = MS.brett / B;
+  let s = planHintergrund(0, 0, D_, D_, 23);
+  s += `<g transform="translate(${MS.rand} ${MS.rand}) scale(${k})">${planInhalt()}</g>`;
+  if (kontrolle) {
+    const r = MS.rand, sc = MS.rand + MS.sicher;
+    s += `<rect x="0" y="0" width="${D_}" height="${D_}" fill="none" stroke="#ff00ff" stroke-width="1.2"/>`;
+    s += `<rect x="${r}" y="${r}" width="${MS.brett}" height="${MS.brett}" fill="none" stroke="#00e5ff" stroke-width="0.6"/>`;
+    s += `<rect x="${sc}" y="${sc}" width="${MS.brett - 2 * MS.sicher}" height="${MS.brett - 2 * MS.sicher}" fill="none" stroke="#ffeb3b" stroke-width="0.5" stroke-dasharray="3 2"/>`;
+    s += `<line x1="${D_ / 2}" y1="0" x2="${D_ / 2}" y2="${D_}" stroke="#ff5252" stroke-width="0.6" stroke-dasharray="4 2"/>`;
+    const t = (x, y, txt, c) => `<text x="${x}" y="${y}" font-family="Nunito" font-weight="800" font-size="3.2" fill="${c}" stroke="#000" stroke-width="0.4" paint-order="stroke">${txt}</text>`;
+    s += t(2, 6, 'Datei 320 × 320 mm (Umschlag + Beschnitt)', '#ff80ff') + t(r + 2, r + 5, 'Spielbrett 300 × 300 mm', '#80f0ff') + t(sc + 2, sc + 10, 'Sicherheitsabstand 5 mm', '#fff59d') + t(D_ / 2 + 2, D_ - 4, 'Falz (vertikal)', '#ff8a80');
+  }
   return s;
 }
 
 function planDateien() {
-  const inhalt = planInhalt();
+  const inhalt = planMitHintergrund();
   const out = [];
+  const DM = MS.brett + 2 * MS.rand;
+  const msHtml = (titel, kontrolle) => htmlDoc(titel, `@page{size:${DM}mm ${DM}mm;margin:0}.page{width:${DM}mm;height:${DM}mm}body{margin:0}`,
+    `<div class="page"><svg width="${DM}mm" height="${DM}mm" viewBox="0 0 ${DM} ${DM}">${planMeinspielSvg(kontrolle)}</svg></div>`);
+  out.push({ name: '00_meinspiel_Spielbrett_300x300mm', html: msHtml('Spielbrett meinspiel', false), png: { mm: DM, px: 3780 } });
+  out.push({ name: '00_meinspiel_KONTROLLANSICHT_nicht_drucken', html: msHtml('Kontrollansicht', true), png: { mm: DM, px: 1890 }, keinPdf: true });
   // 1) ganze Fläche (Copyshop, 40 x 40 cm)
   out.push({
     name: '01_Spielplan_40x40cm_Copyshop',
@@ -643,10 +729,25 @@ async function main() {
   for (const d of dateien) {
     const htmlPfad = path.join(BUILD, d.name + '.html');
     fs.writeFileSync(htmlPfad, d.html);
-    await page.goto('file://' + htmlPfad, { waitUntil: 'load' });
-    await page.evaluate(() => document.fonts.ready);
-    await page.pdf({ path: path.join(DRUCK, d.name + '.pdf'), preferCSSPageSize: true, printBackground: true });
-    console.log('✔', d.name + '.pdf');
+    if (!d.keinPdf) {
+      await page.goto('file://' + htmlPfad, { waitUntil: 'load' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.pdf({ path: path.join(DRUCK, d.name + '.pdf'), preferCSSPageSize: true, printBackground: true });
+      console.log('✔', d.name + '.pdf');
+    }
+    if (d.png) {
+      // Rasterbild in exakter Pixelgröße (z. B. 3780 x 3780 px = 320 mm bei 300 dpi)
+      const css = (d.png.mm * 96) / 25.4;
+      const ctx = await browser.newContext({ viewport: { width: Math.ceil(css), height: Math.ceil(css) }, deviceScaleFactor: d.png.px / css });
+      const p2 = await ctx.newPage();
+      await p2.goto('file://' + htmlPfad, { waitUntil: 'load' });
+      await p2.evaluate(() => document.fonts.ready);
+      const ziel = path.join(DRUCK, d.name + '.png');
+      await p2.screenshot({ path: ziel, clip: { x: 0, y: 0, width: css, height: css } });
+      await ctx.close();
+      require('child_process').execFileSync('python3', ['-I', path.join(ROOT, 'tools/png_fertig.py'), ziel, String(d.png.px)]);
+      console.log('✔', d.name + '.png');
+    }
   }
   await browser.close();
 }
