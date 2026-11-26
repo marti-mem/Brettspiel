@@ -90,7 +90,7 @@ const jakobKarten = [
   { art: 'hoppla', anzahl: 1, emoji: '🥵', titel: 'Autsch, heiß!', text: 'Du hast vom Punsch genascht, und der war noch heiß! Du pustest erst und setzt beim nächsten Mal aus.' },
   { art: 'hoppla', anzahl: 1, emoji: '🌨️', titel: 'Schneegestöber', text: 'Du siehst nichts mehr! Zieh 2 Felder zurück – dorthin, woher du gekommen bist.' },
   { art: 'hoppla', anzahl: 1, emoji: '🐔', titel: 'Hühner füttern', text: 'Jakob will unbedingt noch die Hühner füttern. Geh zum Hühnerstall.' },
-  { art: 'hoppla', anzahl: 1, emoji: '🎶', titel: 'Chorprobe', text: 'Susi möchte noch kurz bei der Chorprobe zuhören, während die Gans im Rohr ist. Geh zur Kirche.' },
+  { art: 'hoppla', anzahl: 1, emoji: '🎶', titel: 'Chorprobe', text: 'Susi möchte noch kurz bei der Chorprobe zuhören. Geh zur Kirche.' },
   { art: 'hoppla', anzahl: 1, emoji: '🎠', titel: 'Karussell', text: 'Jakob will noch eine Runde Karussell fahren. Geh zum Weihnachtsmarkt.' },
   { art: 'hoppla', anzahl: 1, emoji: '🌰', titel: 'Heiße Maroni!', text: 'Susi riecht den Maronibrater. Da muss sie hin! Geh zum Maronistand.' },
   { art: 'hoppla', anzahl: 1, emoji: '🧤', titel: 'Handschuh verloren', text: 'Jakob hat einen Handschuh verloren. Zieh 3 Felder zurück – dorthin, woher du gekommen bist.' },
@@ -98,10 +98,10 @@ const jakobKarten = [
 
   // ---- Miteinander (10) ----
   { art: 'miteinander', anzahl: 2, emoji: '🌰', titel: 'Maroni für alle', text: 'Susi verteilt heiße Maroni. Alle Figuren dürfen 1 Feld ziehen – in eine Richtung ihrer Wahl.' },
-  { art: 'miteinander', anzahl: 2, emoji: '😂', titel: 'Weihnachtswitz', text: 'Erzähl einen Witz! Wer zuerst lacht, darf 2 Felder ziehen.' },
-  { art: 'miteinander', anzahl: 2, emoji: '🐧', titel: 'Wintertiere', text: 'Mach ein Wintertier nach (Rentier, Pinguin, Eisbär …). Wer es zuerst errät, darf 2 Felder ziehen – und du auch!' },
+  { art: 'miteinander', anzahl: 2, emoji: '🔍', titel: 'Ich sehe was …', text: 'Such dir etwas auf dem Spielplan aus: „Ich sehe was, was du nicht siehst, und das ist …“ Wer es zuerst findet, darf 2 Felder ziehen – und du auch!' },
+  { art: 'miteinander', anzahl: 2, emoji: '🐾', titel: 'Wintertiere', text: 'Mach ein Tier nach, das im Winter draußen unterwegs ist. Wer es zuerst errät, darf 2 Felder ziehen – und du auch!' },
   { art: 'miteinander', anzahl: 1, emoji: '💝', titel: 'Wichteln', text: 'Mach jemandem eine Freude: Eine Person deiner Wahl darf 3 Felder ziehen. Danach würfelst du noch einmal.' },
-  { art: 'miteinander', anzahl: 1, emoji: '🎭', titel: 'Pantomime', text: 'Mach ohne Worte vor, was man in der Küche tut (rühren, schnippeln, abschmecken …). Wer es errät, darf 2 Felder ziehen – und du auch!' },
+  { art: 'miteinander', anzahl: 1, emoji: '🎭', titel: 'Pantomime', text: 'Mach ohne Worte etwas vor, das man in der Küche tut. Wer es errät, darf 2 Felder ziehen – und du auch!' },
   { art: 'miteinander', anzahl: 1, emoji: '🎵', titel: 'Weihnachtslied', text: 'Alle singen zusammen eine Strophe von Susis Lieblings-Weihnachtslied. Danach dürfen alle Figuren 1 Feld ziehen.' },
   { art: 'miteinander', anzahl: 1, emoji: '👩‍🍳', titel: 'Lieblingsessen', text: 'Alle verraten reihum ihr liebstes Weihnachtsessen. Danach darfst du noch einmal würfeln.' },
 

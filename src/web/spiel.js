@@ -489,7 +489,7 @@ function regeln() {
   <li><b>Sternfeld:</b> Eine Wichtel-Karte wird gezogen (nur nach einem Würfelwurf).</li>
   <li><b>Küche:</b> Mit allen Zutaten musst du sie genau treffen. Bei zu viel Würfelpunkten ziehst du hindurch und versuchst es im nächsten Zug wieder.</li></ul>
   <h3>Wichtel-Karten</h3><ul>
-  <li><b>Glück</b> bringt dich voran, <b>Hoppla</b> schickt dich woandershin, <b>Miteinander</b> macht ihr gemeinsam am Tisch (Figuren mit „Figur versetzen“ bewegen, dann „Weiter“).</li>
+  <li><b>Glück</b> bringt dich voran, <b>Hoppla</b> schickt dich woandershin – liegt dort eine Zutat von deiner Liste, darfst du sie nehmen, <b>Miteinander</b> macht ihr gemeinsam am Tisch (Figuren mit „Figur versetzen“ bewegen, dann „Weiter“).</li>
   <li><b>Joker</b> behaltet ihr (höchstens 2) und spielt sie über den lila Knopf.</li></ul>
   <h3>Varianten</h3><ul>
   <li><b>Team-Spiel:</b> je zwei Figuren teilen sich eine Liste; nach dem Würfeln entscheidet das Team, welche Figur zieht.</li>

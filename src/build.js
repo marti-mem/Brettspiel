@@ -649,12 +649,14 @@ function regelDatei() {
   .s2 p,.s2 li{font-size:3.4mm;line-height:1.34}
   .s2 li{margin:0.4mm 0}
   .s2 .box{padding:2mm 4mm;margin-top:1.5mm}
+  .s2 .kart{margin:1mm 0;padding:0.9mm 2.5mm}
+  .s2 h2{margin:2.4mm 0 1mm}
   .s1 li{margin:0.35mm 0}
   .box.rot{background:#fff6f2;border-color:#e9a3a3}
   .box.blau{background:#eef3fb;border-color:#b9cbe8}
   .inl{display:inline-block;vertical-align:-0.8mm}
   .fuss{position:absolute;bottom:8mm;left:15mm;right:15mm;font-family:'DM Serif Display',serif;font-size:2.7mm;color:#a08a5f;display:flex;justify-content:space-between}
-  .online{display:flex;align-items:center;gap:5mm;margin-top:3mm;background:#fffdf8;border:0.35mm solid #e7cf8f;border-radius:3mm;padding:2.5mm 4mm}
+  .online{display:flex;align-items:center;gap:5mm;margin-top:2.4mm;background:#fffdf8;border:0.35mm solid #e7cf8f;border-radius:3mm;padding:2mm 4mm}
   .online .qr{background:#fff;padding:1.8mm;border-radius:2mm;box-shadow:0 0 0 0.5mm #d4a537}
   .online .ot{font-family:'DM Serif Display',serif;font-size:5.6mm;color:#c8102e}
   .online p{margin:0.6mm 0 0}
@@ -732,7 +734,11 @@ function regelDatei() {
     ${artZeile('hoppla', 'Susi oder Jakob haben eine Idee, und du musst mit. Manchmal hilft das sogar!')}
     ${artZeile('miteinander', 'Jetzt machen alle mit: lachen, raten, singen. Oft dürfen mehrere ziehen.')}
     ${artZeile('joker', '<b>Behalte diese Karte</b> offen vor dir und spiel sie, wann du willst. Du darfst höchstens <b>2 Joker</b> haben. Nach dem Ausspielen kommt sie unter den Stapel.')}
-    <p style="margin-top:1.2mm">Wichtig: Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</p>
+    <ul style="margin-top:1.2mm">
+      <li><b>Schickt dich eine Karte zu einem Ort</b> (zum Beispiel „Geh zum Hühnerstall“), gilt das wie eine normale Landung: Steht die Zutat dort auf deiner Liste und hast du sie noch nicht, nimm sie dir.</li>
+      <li>Eine neue ${KN} gibt es nur, wenn du <b>mit dem Würfel</b> auf einem Stern landest. Bringt dich eine Karte auf ein Sternfeld, ziehst du keine weitere Karte.</li>
+      <li>Gespielte Karten kommen <b>unter den Stapel</b> – so gehen die Karten nie aus.</li>
+    </ul>
 
     <h2>${sternHtml(4.6)}Wer gewinnt?</h2>
     <p>Hast du <b>alle 4 Sachen</b> von deiner ${LN}? Dann ab nach Hause! Wer als Erstes in <b>${Z}</b> ankommt, wird Susis Chef-Gehilfe oder Chef-Gehilfin und gewinnt.
@@ -766,8 +772,8 @@ function regelDatei() {
       <p><b>${i('⏩')} Kurzes Spiel:</b> Es reichen <b>3 Sachen</b>. Deckt vorher eine beliebige auf der Liste ab.</p>
       <p><b>${i('🧠')} Für Profis:</b> Die Listen bleiben <b>geheim</b>, und alle dürfen nur <b>1 Joker</b> haben.</p>
     </div>
-    ${QR_SVG ? `<div class="online"><div class="qr">${qrHtml(19)}</div><div style="flex:1"><div class="ot">Online spielen</div>
-      <p>QR-Code scannen und die digitale Version im Browser spielen – mit allen Figuren, Karten und dem Spielbrett.</p>
+    ${QR_SVG ? `<div class="online"><div class="qr">${qrHtml(17)}</div><div style="flex:1"><div class="ot">Online spielen</div>
+      <p>QR-Code scannen und die digitale Version im Browser spielen.</p>
       <p class="url">${esc(D.onlineLink.replace('https://', ''))}</p></div>
       <div class="gruss">${stechpalmeHtml(10)}<br>Frohe Weihnachten<br>und viel Spaß!</div></div>`
     : `<div class="schluss">${stechpalmeHtml(11)}Frohe Weihnachten und viel Spaß!${stechpalmeHtml(11)}</div>`}
