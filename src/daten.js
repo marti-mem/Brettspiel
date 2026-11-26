@@ -4,7 +4,7 @@
 const titel = 'Susis Weihnachtsdinner';
 const titelZeilen = ['Susis', 'Weihnachts-', 'dinner'];
 const untertitel = 'Das perfekte Weihnachtsessen'; // so steht der Titel auf dem Spielplan
-const zentrum = { name: 'Susis Weihnachtsküche', kurz: ['Susis', 'Weihnachtsküche'], emoji: '🏡', deko: '🍲' };
+const zentrum = { name: 'Susis Weihnachtsküche', kurz: ['Susis', 'Weihnachtsküche'], emoji: '🏡', deko: '🍛' };
 const kartenName = 'Wichtel-Karte';
 const kartenNameMehrzahl = 'Wichtel-Karten';
 const listenName = 'Einkaufsliste';
@@ -16,10 +16,10 @@ const widmung = 'Für Susi – Frohe Weihnachten 2026! Dein Wichtel';
 // `mitte: true` = von hier führt ein Weg direkt in Susis Weihnachtsküche.
 const orte = [
   { id: 'tannenwald',  name: 'Tannenwald',  emoji: '🌲',  farbe: '#1b5e20', mitte: false, ding: { name: 'Pilze',        emoji: '🍄' } },
-  { id: 'baeckerei',   name: 'Bäckerei',    emoji: '🥨', farbe: '#b26a00', mitte: true,  ding: { name: 'Plätzchen',    emoji: '🍪' } },
-  { id: 'postamt',     name: 'Postamt',     emoji: '📮',  farbe: '#c62828', mitte: false, ding: { name: 'Geheimrezept', emoji: '📜' } },
-  { id: 'markt',       name: 'Gemüsemarkt', emoji: '🧺',  farbe: '#6a1b9a', mitte: true,  ding: { name: 'Kartoffeln',   emoji: '🥔' } },
-  { id: 'bauernhof',   name: 'Bauernhof',   emoji: '🐓',  farbe: '#6d4c41', mitte: false, ding: { name: 'Eier',         emoji: '🥚' } },
+  { id: 'baeckerei',   name: 'Bäckerei',    emoji: '🥨', farbe: '#b26a00', mitte: true,  ding: { name: 'Naan-Brot',    emoji: '🫓' } },
+  { id: 'postamt',     name: 'Postamt',     emoji: '📮',  farbe: '#c62828', mitte: false, ding: { name: 'Gewürze',      emoji: '🌶️' } },
+  { id: 'markt',       name: 'Gemüsemarkt', emoji: '🧺',  farbe: '#6a1b9a', mitte: true,  ding: { name: 'Erdäpfel',     emoji: '🥔' } },
+  { id: 'bauernhof',   name: 'Bauernhof',   emoji: '🐓',  farbe: '#6d4c41', mitte: false, ding: { name: 'Milch',        emoji: '🥛' } },
   { id: 'kirche',      name: 'Kirche',      emoji: '⛪',  farbe: '#ad1457', mitte: true,  ding: { name: 'Kerze',        emoji: '🕯️' } },
   { id: 'schneemann',  name: 'Schneewiese', emoji: '☃️',  farbe: '#0277bd', mitte: false, ding: { name: 'Karotte',      emoji: '🥕' } },
   { id: 'almhuette',   name: 'Almhütte',    emoji: '🛖',  farbe: '#00838f', mitte: true,  ding: { name: 'Käse',         emoji: '🧀' } },
@@ -82,19 +82,19 @@ const jakobKarten = [
   { art: 'glueck', anzahl: 1, emoji: '🤗', titel: 'Huckepack', text: 'Susi nimmt dich Huckepack. Stell deine Figur auf das Feld einer anderen Figur deiner Wahl.' },
 
   // ---- Hoppla (10) ----
-  { art: 'hoppla', anzahl: 1, emoji: '🍪', titel: 'Plätzchenduft', text: 'Susi riecht frische Plätzchen. Geh zur Bäckerei.' },
+  { art: 'hoppla', anzahl: 1, emoji: '🫓', titel: 'Duft von Naan', text: 'Susi riecht frisch gebackenes Naan-Brot. Geh zur Bäckerei.' },
   { art: 'hoppla', anzahl: 1, emoji: '✉️', titel: 'Einladungen', text: 'Susi hat vergessen, die Einladungen zum Dinner abzuschicken. Geh zum Postamt.' },
-  { art: 'hoppla', anzahl: 1, emoji: '🧣', titel: 'Schal vergessen', text: 'Brrr, ist das kalt! Du holst deinen Schal und setzt beim nächsten Mal aus.' },
+  { art: 'hoppla', anzahl: 1, emoji: '🥵', titel: 'Zu scharf!', text: 'Huch, das Curry ist zu scharf! Du trinkst erst ein Glas Lassi und setzt beim nächsten Mal aus.' },
   { art: 'hoppla', anzahl: 1, emoji: '🌨️', titel: 'Schneegestöber', text: 'Du siehst nichts mehr! Zieh 2 Felder zurück – dorthin, woher du gekommen bist.' },
   { art: 'hoppla', anzahl: 1, emoji: '⛄', titel: 'Schneemann bauen', text: 'Jakob will unbedingt einen Schneemann bauen. Geh zur Schneewiese.' },
-  { art: 'hoppla', anzahl: 1, emoji: '🎶', titel: 'Chorprobe', text: 'Susi möchte noch kurz bei der Chorprobe zuhören, während der Braten im Ofen ist. Geh zur Kirche.' },
+  { art: 'hoppla', anzahl: 1, emoji: '🎶', titel: 'Chorprobe', text: 'Susi möchte noch kurz bei der Chorprobe zuhören, während das Curry köchelt. Geh zur Kirche.' },
   { art: 'hoppla', anzahl: 1, emoji: '🛷', titel: 'Rodelpartie', text: 'Jakob will unbedingt noch rodeln. Geh zur Almhütte.' },
   { art: 'hoppla', anzahl: 1, emoji: '🌲', titel: 'Tischdeko', text: 'Susi möchte noch Tannenzweige für den festlichen Tisch. Geh zum Tannenwald.' },
   { art: 'hoppla', anzahl: 1, emoji: '🧤', titel: 'Handschuh verloren', text: 'Jakob hat einen Handschuh verloren. Zieh 3 Felder zurück – dorthin, woher du gekommen bist.' },
-  { art: 'hoppla', anzahl: 1, emoji: '😱', titel: 'Oh nein!', text: 'Susi zählt nach: Die Kartoffeln reichen nicht für alle! Geh zum Gemüsemarkt.' },
+  { art: 'hoppla', anzahl: 1, emoji: '😱', titel: 'Oh nein!', text: 'Susi zählt nach: Die Erdäpfel reichen nicht für alle! Geh zum Gemüsemarkt.' },
 
   // ---- Miteinander (10) ----
-  { art: 'miteinander', anzahl: 2, emoji: '🍪', titel: 'Vorspeise für alle', text: 'Susi lässt alle von der Vorspeise naschen. Alle Figuren dürfen 1 Feld ziehen – in eine Richtung ihrer Wahl.' },
+  { art: 'miteinander', anzahl: 2, emoji: '🥟', titel: 'Momos für alle', text: 'Susi verteilt frische Momos zum Kosten. Alle Figuren dürfen 1 Feld ziehen – in eine Richtung ihrer Wahl.' },
   { art: 'miteinander', anzahl: 2, emoji: '😂', titel: 'Weihnachtswitz', text: 'Erzähl einen Witz! Wer zuerst lacht, darf 2 Felder ziehen.' },
   { art: 'miteinander', anzahl: 2, emoji: '🐧', titel: 'Wintertiere', text: 'Mach ein Wintertier nach (Rentier, Pinguin, Eisbär …). Wer es zuerst errät, darf 2 Felder ziehen – und du auch!' },
   { art: 'miteinander', anzahl: 1, emoji: '💝', titel: 'Wichteln', text: 'Mach jemandem eine Freude: Ein Mitspieler deiner Wahl darf 3 Felder ziehen. Danach würfelst du noch einmal.' },

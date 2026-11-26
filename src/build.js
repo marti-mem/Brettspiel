@@ -508,7 +508,7 @@ function regelDatei() {
     <h1>${emoHtml('🎄', 12)}${esc(D.titel)}</h1>
     <div class="unter"><span>${i('👨‍👩‍👧‍👦', 4.5)} 2–6 Spieler · bis 10 im Team</span><span>${i('🎂', 4.5)} ab 7 Jahren</span><span>${i('⏱️', 4.5)} ca. 30–45 Minuten</span></div>
     <div class="story">Es ist der 24. Dezember! Susi ist für ihre Kochpartys berühmt, und heute hat sie sich etwas ganz Besonderes vorgenommen:
-    <b>das beste Weihnachtsessen der Welt</b> für Jakob und die ganze Familie. Doch oje, in der Küche fehlt noch so einiges: Pilze, Käse, Eier, Kartoffeln, ihr Geheimrezept …
+    <b>das beste Weihnachtsessen der Welt</b> für Jakob und die ganze Familie. Wie so oft kocht sie indisch und nepalesisch: Curry, Momos, Naan und Chai. Doch oje, in der Küche fehlt noch so einiges: Gewürze, Erdäpfel, Pilze, Käse, Milch …
     Zum Glück helfen alle beim Einkaufen mit!
     <b>Wer zuerst alle Zutaten von seiner ${LN} in Susis Weihnachtsküche bringt, wird Susis Chef-Gehilfe und gewinnt!</b></div>
 

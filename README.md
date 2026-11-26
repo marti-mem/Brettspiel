@@ -2,7 +2,7 @@
 
 Ein selbstgemachtes Familien-Brettspiel für 2–6 Spieler, im Team-Modus für bis zu 10 Personen. Es ist ab 7 Jahren geeignet und dauert ca. 30–45 Minuten.
 
-Es ist der 24. Dezember, und Susi, bekannt für ihre Kochpartys, will das beste Weihnachtsessen der Welt kochen. Alle helfen beim Einkaufen im Weihnachtsdorf: Pilze, Käse, Eier, Kartoffeln, das Geheimrezept und Co. Wer zuerst alle 4 Zutaten von seiner Einkaufsliste in Susis Weihnachtsküche bringt, gewinnt. Mit der Variante „Gemeinsam bis Heiligabend“ spielen alle zusammen gegen den Adventskalender.
+Es ist der 24. Dezember, und Susi, bekannt für ihre Kochpartys, will das beste Weihnachtsessen der Welt kochen. Alle helfen beim Einkaufen im Weihnachtsdorf: Gewürze, Naan-Brot, Erdäpfel, Pilze, Käse und Co. für ein indisch-nepalesisches Weihnachtsmenü. Wer zuerst alle 4 Zutaten von seiner Einkaufsliste in Susis Weihnachtsküche bringt, gewinnt. Mit der Variante „Gemeinsam bis Heiligabend“ spielen alle zusammen gegen den Adventskalender.
 
 ## Druckvorlagen (Ordner `druck/`)
 
