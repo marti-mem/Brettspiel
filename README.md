@@ -63,15 +63,15 @@ Die PDFs landen danach in `druck/`.
 
 Die Bilder stammen von [Twemoji](https://github.com/jdecked/twemoji) (CC-BY 4.0), die Schriften sind Fredoka und Nunito (SIL OFL).
 
-## Web-Version zum Testen
+## Online-Version
 
-`web/index.html` ist eine spielbare Testversion in **einer einzigen Datei**, alle Bilder sind eingebettet (ca. 4 MB). Einfach auf einen Webserver hochladen oder lokal im Browser öffnen.
+`web/index.html` ist die spielbare Online-Version in **einer einzigen Datei** (alle Bilder eingebettet, ca. 3,5 MB).
+Sie wird unter https://www.martiversum.at/weihnacht/susi/index.html bereitgestellt – der QR-Code in der Spielregel und auf dem Deckel führt dorthin.
 
-- 2–6 Figuren auswählen; Einkaufslisten werden zufällig verteilt
-- Würfeln → alle erreichbaren Felder leuchten (Richtung frei, kein Umdrehen im Zug, Küche als Abkürzung)
-- Zutaten werden automatisch eingesammelt, die Küche muss genau getroffen werden
-- Wichtel-Karten werden gezogen und – soweit möglich – automatisch ausgeführt; Joker können gespielt werden
-- Für Miteinander-Karten gibt es „Figur versetzen“ und „Zug beenden“
-- Nicht automatisiert: Team-Spiel und „Gemeinsam bis Heiligabend“
+- Startbildschirm: Spielart wählen (Klassisch, Team-Spiel, Gemeinsam bis Heiligabend, optional „Für die Kleinsten“) und Figuren antippen
+- Deutliche Am-Zug-Anzeige (Kopfleiste, Rahmenfarbe, hüpfender Pfeil über der Figur, Einblendung bei jedem Zugwechsel)
+- Würfel mit Augen; alle genau erreichbaren Felder leuchten; Figuren laufen Feld für Feld
+- Zutaten, Küche, Wichtel-Karten und Joker werden automatisch abgewickelt; Miteinander-Karten macht ihr am Tisch („Figur versetzen“, dann „Weiter“)
+- Spielregel-Fenster, automatisches Speichern im Browser, Konfetti beim Sieg
 
-Neu erzeugen mit `npm run build` und danach `npm run web`. Die Schriften werden von Google Fonts geladen (Internetverbindung nötig, sonst Ersatzschrift).
+Neu erzeugen mit `npm run build` und danach `npm run web`. Die Schriften kommen von Google Fonts (ohne Internet: Ersatzschrift).
