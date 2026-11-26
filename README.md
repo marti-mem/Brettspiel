@@ -62,3 +62,16 @@ npm run build
 Die PDFs landen danach in `druck/`.
 
 Die Bilder stammen von [Twemoji](https://github.com/jdecked/twemoji) (CC-BY 4.0), die Schriften sind Fredoka und Nunito (SIL OFL).
+
+## Web-Version zum Testen
+
+`web/index.html` ist eine spielbare Testversion in **einer einzigen Datei**, alle Bilder sind eingebettet (ca. 4 MB). Einfach auf einen Webserver hochladen oder lokal im Browser öffnen.
+
+- 2–6 Figuren auswählen; Einkaufslisten werden zufällig verteilt
+- Würfeln → alle erreichbaren Felder leuchten (Richtung frei, kein Umdrehen im Zug, Küche als Abkürzung)
+- Zutaten werden automatisch eingesammelt, die Küche muss genau getroffen werden
+- Wichtel-Karten werden gezogen und – soweit möglich – automatisch ausgeführt; Joker können gespielt werden
+- Für Miteinander-Karten gibt es „Figur versetzen“ und „Zug beenden“
+- Nicht automatisiert: Team-Spiel und „Gemeinsam bis Heiligabend“
+
+Neu erzeugen mit `npm run build` und danach `npm run web`. Die Schriften werden von Google Fonts geladen (Internetverbindung nötig, sonst Ersatzschrift).
