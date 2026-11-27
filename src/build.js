@@ -691,6 +691,7 @@ function regelDatei() {
         <li>${D.suchlisten.length} ${LN}n</li>
         <li>${kartenZahl} ${KNM}</li>
         <li>1 Würfel</li>
+        <li>Dazu: Papier und Stift</li>
       </ul>
     </div>
     <div>
@@ -732,7 +733,7 @@ function regelDatei() {
     <h2 style="margin-top:0">${sternHtml(4.6)}Die ${KNM}</h2>
     ${artZeile('glueck', 'Gute Nachrichten! Du kommst schneller voran.')}
     ${artZeile('hoppla', 'Susi oder Jakob haben eine Idee, und du musst mit. Manchmal hilft das sogar!')}
-    ${artZeile('miteinander', 'Jetzt machen alle mit: lachen, raten, singen. Oft dürfen mehrere ziehen.')}
+    ${artZeile('miteinander', 'Jetzt machen alle mit: raten, zeichnen, Pantomime. Oft dürfen mehrere ziehen.')}
     ${artZeile('joker', '<b>Behalte diese Karte</b> offen vor dir und spiel sie, wann du willst. Du darfst höchstens <b>2 Joker</b> haben. Nach dem Ausspielen kommt sie unter den Stapel.')}
     <ul style="margin-top:1.2mm">
       <li><b>Schickt dich eine Karte zu einem Ort</b> (zum Beispiel „Geh zum Hühnerstall“), gilt das wie eine normale Landung: Steht die Zutat dort auf deiner Liste und hast du sie noch nicht, nimm sie dir.</li>

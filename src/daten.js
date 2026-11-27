@@ -102,7 +102,7 @@ const jakobKarten = [
   { art: 'miteinander', anzahl: 2, emoji: '🐾', titel: 'Wintertiere', text: 'Mach ein Tier nach, das im Winter draußen unterwegs ist. Wer es zuerst errät, darf 2 Felder ziehen – und du auch!' },
   { art: 'miteinander', anzahl: 1, emoji: '💝', titel: 'Wichteln', text: 'Mach jemandem eine Freude: Eine Person deiner Wahl darf 3 Felder ziehen. Danach würfelst du noch einmal.' },
   { art: 'miteinander', anzahl: 1, emoji: '🎭', titel: 'Pantomime', text: 'Mach ohne Worte etwas vor, das man in der Küche tut. Wer es errät, darf 2 Felder ziehen – und du auch!' },
-  { art: 'miteinander', anzahl: 1, emoji: '🎵', titel: 'Weihnachtslied', text: 'Alle singen zusammen eine Strophe von Susis Lieblings-Weihnachtslied. Danach dürfen alle Figuren 1 Feld ziehen.' },
+  { art: 'miteinander', anzahl: 1, emoji: '🎨', titel: 'Kleines Kunstwerk', text: 'Zeichne etwas Weihnachtliches – ohne Worte und ohne Buchstaben! Wer es zuerst errät, darf 2 Felder ziehen – und du auch!' },
   { art: 'miteinander', anzahl: 1, emoji: '👩‍🍳', titel: 'Lieblingsessen', text: 'Alle verraten reihum ihr liebstes Weihnachtsessen. Danach darfst du noch einmal würfeln.' },
 
   // ---- Joker – zum Behalten (8) ----
