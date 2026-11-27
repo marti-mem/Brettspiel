@@ -583,32 +583,33 @@ function figurPanel(fig, w, h) {
   s += `<text x="${cx}" y="${h - 6.8}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="${fig.farbe}">${esc(fig.name)}</text>`;
   return s;
 }
-function figurenDatei() {
-  const W = 32, PH = 48, LA = 12, H = PH * 2 + LA * 2; // 32 x 120 mm Streifen
-  const cols = 5, x0 = 25, y0 = 22, gapY = 13;
+function figurenDatei(k = 1) {
+  // k = 1: große Figuren für den 40-cm-Plan; k = 0.75: kleine Figuren für das 30-cm-Brett (meinspiel.de)
+  const W = 32 * k, PH = 48 * k, LA = 12 * k, H = PH * 2 + LA * 2;
+  const cols = k < 1 ? 7 : 5, x0 = (210 - cols * W) / 2, y0 = 22, gapY = 13;
   let s = '';
   const marken = [];
   D.figuren.forEach((fig, i) => {
     const c = i % cols, r = Math.floor(i / cols);
     const x = x0 + c * (W + 0), y = y0 + r * (H + gapY);
     const lasche = (yy, oben) => `<rect x="${x}" y="${yy}" width="${W}" height="${LA}" fill="${fig.farbe}" opacity="0.35"/>
-      <text x="${x + W / 2}" y="${yy + LA / 2 + 1.2}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="3" fill="#555" ${oben ? `transform="rotate(180 ${x + W / 2} ${yy + LA / 2})"` : ''}>Standfuß</text>`;
+      <text x="${x + W / 2}" y="${yy + LA / 2 + 1.2 * k}" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="${3 * k}" fill="#555" ${oben ? `transform="rotate(180 ${x + W / 2} ${yy + LA / 2})"` : ''}>Standfuß</text>`;
     s += lasche(y, true);
     // Rückseite: um 180° gedreht (wird über die Oberkante nach hinten gefaltet)
-    s += `<g transform="translate(${x + W} ${y + LA + PH}) rotate(180)">${figurPanel(fig, W, PH)}</g>`;
-    s += `<g transform="translate(${x} ${y + LA + PH})">${figurPanel(fig, W, PH)}</g>`;
+    s += `<g transform="translate(${x + W} ${y + LA + PH}) rotate(180) scale(${k})">${figurPanel(fig, 32, 48)}</g>`;
+    s += `<g transform="translate(${x} ${y + LA + PH}) scale(${k})">${figurPanel(fig, 32, 48)}</g>`;
     s += lasche(y + LA + 2 * PH, false);
     // Faltlinien
     [y + LA, y + LA + PH, y + LA + 2 * PH].forEach(yy => (s += `<line x1="${x}" y1="${yy}" x2="${x + W}" y2="${yy}" stroke="#333" stroke-width="0.3" stroke-dasharray="1.2 1"/>`));
     s += `<rect x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="#999" stroke-width="0.15"/>`;
     marken.push(schnittmarken(x, y, W, H));
   });
-  const leg = `<div class="seitenhinweis" style="left:25mm;top:9mm;font-size:3.2mm;line-height:1.35;color:#555;width:165mm">
-    <b>Spielfiguren</b> · Am Rand ausschneiden. An der mittleren gestrichelten Linie falten (das ist der Kopf der Figur),
+  const leg = `<div class="seitenhinweis" style="left:${x0}mm;top:9mm;font-size:3.2mm;line-height:1.35;color:#555;width:${210 - 2 * x0}mm">
+    <b>Spielfiguren${k < 1 ? ' – klein, für das Spielbrett 30 × 30 cm' : ' – für den Spielplan 40 × 40 cm'}</b> · Am Rand ausschneiden. An der mittleren gestrichelten Linie falten (das ist der Kopf der Figur),
     Vorder- und Rückseite zusammenkleben. Die beiden Standfüße an den äußeren Linien nach außen knicken – fertig.</div>`;
   const body = `<div class="page">${leg}<svg style="position:absolute;left:0;top:0" width="210mm" height="297mm" viewBox="0 0 210 297">${s}</svg>
     ${markenSvg(210, 297, '')}</div>`;
-  return { name: '06_Spielfiguren_A4', html: htmlDoc('Spielfiguren', '@page{size:A4;margin:0}.page{width:210mm;height:297mm}', body) };
+  return { name: k < 1 ? '06_Spielfiguren_klein_30cm-Brett_A4' : '06_Spielfiguren_A4', html: htmlDoc('Spielfiguren', '@page{size:A4;margin:0}.page{width:210mm;height:297mm}', body) };
 }
 
 // ======================================================================
@@ -973,7 +974,7 @@ async function main() {
   QR_SVG = D.onlineLink ? await require('qrcode').toString(D.onlineLink, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#1f4d38', light: '#ffffff' } }) : '';
   assetsRegistrieren();
   const sl = suchlistenDatei();
-  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei(), schachtelDatei(false), schachtelDatei(true), ...meinspielKartenDateien()];
+  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), figurenDatei(0.75), deckelDatei(), schachtelDatei(false), schachtelDatei(true), ...meinspielKartenDateien()];
   const browser = await chromium.launch();
   const page = await browser.newPage();
   for (const d of dateien) {

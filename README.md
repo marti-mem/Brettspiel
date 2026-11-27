@@ -66,7 +66,8 @@ Nach dem [Gestaltungsleitfaden 63 × 88 mm](https://www.meinspiel.de/gestaltungs
 | `03_Wichtel-Karten_A4_beidseitig.pdf` | 40 Wichtel-Karten, mit Rückseiten (5 Bögen) | Beidseitig, Karton 250–300 g/m², an der langen Kante wenden |
 | `04_Einkaufslisten_A4.pdf` | 12 Einkaufslisten (9,5 × 9,5 cm) | Nur Vorderseite, Karton |
 | `05_Gegenstaende_A4.pdf` | 48 Gegenstand-Plättchen (3 × 3 cm), 1 Kalender-Stern und 5 leere Ersatz-Plättchen | Nur Vorderseite, Karton |
-| `06_Spielfiguren_A4.pdf` | 10 Falt-Figuren mit Weihnachtsmütze (Susi mit Stern) | Nur Vorderseite, Karton 200–250 g/m² |
+| `06_Spielfiguren_A4.pdf` | 10 Falt-Figuren (32 mm breit) für den Spielplan 40 × 40 cm | Nur Vorderseite, Karton 200–250 g/m² |
+| `06_Spielfiguren_klein_30cm-Brett_A4.pdf` | 10 Falt-Figuren (24 mm breit) für das meinspiel.de-Brett 30 × 30 cm | Nur Vorderseite, Karton 200–250 g/m² |
 | `07_Schachteldeckel_A4.pdf` | Titelbild zum Aufkleben auf eine Schachtel | Fotopapier oder Karton |
 
 Wichtig: Immer in **Originalgröße (100 %)** drucken, also nicht „An Seite anpassen“ wählen.
