@@ -40,6 +40,12 @@ Nach dem [Gestaltungsleitfaden Stülpdeckelschachtel 308 × 217 × 35 mm](https:
 `00_meinspiel_Schachtel_KONTROLLANSICHT_nicht_drucken.png` zeigt Stanzlinie (pink) und Falz (grün) – **nicht** hochladen.
 Pflichtangaben (CE, Warnhinweis, Hersteller) sind nicht enthalten – für ein privates Geschenk per E-Mail an meinspiel.de darauf verzichten (siehe oben).
 
+## Kartenbox für meinspiel.de (Spielkartenbox 1, 100 × 133 × 20 mm)
+
+Optionale bedruckte Box für die 55 Karten (Aufpreis 4,95 €), nach dem [Gestaltungsleitfaden Spielkartenbox 1](https://www.meinspiel.de/gestaltungsleitfaden-stuelpdeckelschachtel-spielkarten-format-124x94x20-mm/):
+`00_meinspiel_Kartenbox_175x207mm.jpg` (2067 × 2445 px, 300 dpi, sRGB) im Konfigurator unter „Verpackung“ hochladen.
+Deckel 94 × 124 mm, vier Seiten à 13 mm, alles mit mind. 3 mm Abstand zur Stanzkontur. Kontrollansicht: `00_meinspiel_Kartenbox_KONTROLLANSICHT_nicht_drucken.png`.
+
 ## Spielkarten für meinspiel.de (100 % individuelle Karten, 63 × 88 mm)
 
 Nach dem [Gestaltungsleitfaden 63 × 88 mm](https://www.meinspiel.de/gestaltungsleitfaden-spielkarten-format-63x88-mm/) – Variante mit **55 Karten**:

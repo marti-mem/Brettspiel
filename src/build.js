@@ -968,13 +968,67 @@ function meinspielKartenDateien() {
 }
 
 // ======================================================================
+// KARTENBOX für meinspiel.de (Spielkartenbox 1, Druckbogen 175 x 207 mm, Upload als JPG)
+// ======================================================================
+function kartenboxDatei(kontrolle) {
+  const DW = 175, DH = 207;
+  const deckel = { x: 40.6, y: 41.5, w: 93.8, h: 123.9 };
+  const flaechen = [
+    { x: 40.6, y: 21.3, w: 93.8, h: 12.9, rot: 180 },
+    { x: 40.6, y: 172.7, w: 93.8, h: 12.9, rot: 0 },
+    { x: 20.3, y: 41.5, w: 12.9, h: 123.9, rot: 90 },
+    { x: 141.7, y: 41.5, w: 12.9, h: 123.9, rot: -90 },
+  ];
+  const css = `@page{size:${DW}mm ${DH}mm;margin:0}
+  body{margin:0}
+  .page{width:${DW}mm;height:${DH}mm;background-size:cover;background-position:center;position:relative;overflow:hidden}
+  .deckel{position:absolute;left:${deckel.x}mm;top:${deckel.y}mm;width:${deckel.w}mm;height:${deckel.h}mm;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .rahmen{position:absolute;inset:3mm;border:0.8mm solid #d4a537;border-radius:5mm}
+  .susi{width:46mm;height:46mm;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 1.2mm #d4a537,0 0 0 2.4mm #fbf4e6,0 0 0 2.8mm #d4a537,0 2mm 5mm rgba(20,40,80,.4)}
+  .karte{margin-top:6mm;background:rgba(251,244,230,.95);border-radius:4mm;padding:3.5mm 4mm;box-shadow:0 0 0 0.5mm #d4a537,0 1.5mm 4mm rgba(20,40,80,.3);text-align:center;width:78mm}
+  .t1{font-family:'DM Serif Display',serif;font-size:7.4mm;color:#c8102e;line-height:1}
+  .t1 i{font-style:italic;color:#b8862b;font-size:6.2mm}
+  .t2{font-family:'DM Serif Display',serif;font-size:8.6mm;color:#1f6b4a;line-height:1.05}
+  .unter{font-family:Fredoka;font-weight:600;font-size:3.3mm;color:#7a6a4f;margin-top:1.6mm;letter-spacing:0.15mm}
+  .reihe{display:flex;gap:1.3mm;justify-content:center;margin-top:2.6mm}
+  .reihe div{width:7.4mm;height:7.4mm;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff 0,#eef2f8 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0.4mm var(--f),0 0 0 0.7mm #d4a537}
+  .emo{display:block}
+  .flaeche{position:absolute;display:flex;align-items:center;justify-content:center}
+  .band{display:flex;align-items:center;justify-content:center;gap:2mm;background:rgba(251,244,230,.95);border-radius:2.5mm;box-shadow:0 0 0 0.4mm #d4a537;padding:0 3.5mm;height:7.5mm;white-space:nowrap}
+  .band .bt{font-family:'DM Serif Display',serif;font-size:4mm;color:#1f6b4a}
+  .band .bt b{font-weight:400;color:#c8102e}.band .bt i{color:#b8862b}
+  .linien{position:absolute;inset:0;width:100%;height:100%}`;
+  const band = `<div class="band">${stechpalmeHtml(5.5)}<span class="bt"><b>Susis</b> <i>perfektes</i> Weihnachtsdinner</span>${stechpalmeHtml(5.5)}</div>`;
+  const flHtml = flaechen.map(f => {
+    const quer = Math.abs(f.rot) === 90, L = quer ? f.h : f.w, Hh = quer ? f.w : f.h;
+    return `<div class="flaeche" style="left:${f.x + f.w / 2 - L / 2}mm;top:${f.y + f.h / 2 - Hh / 2}mm;width:${L}mm;height:${Hh}mm;transform:rotate(${f.rot}deg)">${band}</div>`;
+  }).join('');
+  const linienDatei = path.join(ROOT, 'assets/meinspiel_kartenbox_linien.png');
+  const linien = kontrolle && fs.existsSync(linienDatei) ? `<img class="linien" src="${assetDaten(linienDatei)}">` : '';
+  const body = `<div class="page" style="background-image:url(${bildUri('hintergrund.jpg') || ''})">
+    <div class="deckel"><div class="rahmen"></div>
+      <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
+      <div class="karte">
+        <div class="t1">Susis <i>perfektes</i></div><div class="t2">Weihnachtsdinner</div>
+        <div class="unter">WICHTEL-KARTEN · EINKAUFSLISTEN</div>
+        <div class="reihe">${D.orte.map(o => `<div style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 5.2)}</div>`).join('')}</div>
+      </div>
+    </div>
+    ${flHtml}${linien}
+  </div>`;
+  return kontrolle
+    ? { name: '00_meinspiel_Kartenbox_KONTROLLANSICHT_nicht_drucken', html: htmlDoc('Kartenbox Kontrolle', css, body), png: { mm: DW, mmH: DH, px: 1034, pxH: 1223 }, keinPdf: true }
+    : { name: '00_meinspiel_Kartenbox_175x207mm', html: htmlDoc('Kartenbox meinspiel', css, body), png: { mm: DW, mmH: DH, px: 2067, pxH: 2445, jpg: true }, keinPdf: true };
+}
+
+// ======================================================================
 let QR_SVG = '';
 const qrHtml = mm => `<div style="width:${mm}mm;height:${mm}mm">${QR_SVG.replace('<svg ', '<svg style="width:100%;height:100%;display:block" ')}</div>`;
 async function main() {
   QR_SVG = D.onlineLink ? await require('qrcode').toString(D.onlineLink, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#1f4d38', light: '#ffffff' } }) : '';
   assetsRegistrieren();
   const sl = suchlistenDatei();
-  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), figurenDatei(0.75), deckelDatei(), schachtelDatei(false), schachtelDatei(true), ...meinspielKartenDateien()];
+  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), figurenDatei(0.75), deckelDatei(), schachtelDatei(false), schachtelDatei(true), ...meinspielKartenDateien(), kartenboxDatei(false), kartenboxDatei(true)];
   const browser = await chromium.launch();
   const page = await browser.newPage();
   for (const d of dateien) {
@@ -996,7 +1050,7 @@ async function main() {
       const ziel = path.join(DRUCK, d.name + '.png');
       await p2.screenshot({ path: ziel, clip: { x: 0, y: 0, width: css, height: cssH } });
       await ctx.close();
-      require('child_process').execFileSync('python3', ['-I', path.join(ROOT, 'tools/png_fertig.py'), ziel, String(d.png.px), String(d.png.pxH || d.png.px)]);
+      require('child_process').execFileSync('python3', ['-I', path.join(ROOT, 'tools/png_fertig.py'), ziel, String(d.png.px), String(d.png.pxH || d.png.px), d.png.jpg ? 'jpg' : '']);
       console.log('✔', d.name + '.png');
     }
   }

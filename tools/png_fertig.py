@@ -9,3 +9,7 @@ if im.size != (px, pxH):
     im = im.resize((px, pxH), Image.LANCZOS)
 srgb = ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes()
 im.save(pfad, dpi=(300, 300), icc_profile=srgb, optimize=True)
+
+# Optional zusätzlich als JPG (für Uploads, die nur JPG annehmen)
+if len(sys.argv) > 4 and sys.argv[4] == 'jpg':
+    im.save(pfad[:-4] + '.jpg', 'JPEG', quality=95, subsampling=0, dpi=(300, 300), icc_profile=srgb)
