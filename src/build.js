@@ -525,9 +525,9 @@ function gegenstaendeDatei(tint) {
   .raster{position:absolute;left:${x0}mm;top:${y0}mm;display:grid;grid-template-columns:repeat(${cols},${P}mm);grid-template-rows:repeat(${rows},${P}mm)}
   .chip{width:${P}mm;height:${P}mm;background:radial-gradient(circle at 50% 40%,#fffdf8 0,#f3e6cc 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;outline:0.15mm solid #bbb;position:relative}
   .chip::before{content:'';position:absolute;inset:1.6mm;border:0.9mm solid var(--f);border-radius:2.5mm}
-  .chip .n{font-family:Fredoka;font-weight:600;font-size:3.1mm;color:var(--f);margin-top:0.6mm;line-height:1}`;
+  .chip .n{font-family:Fredoka;font-weight:600;font-size:3.1mm;color:var(--f);margin-top:1.6mm;line-height:1;position:relative;z-index:1}`;
   const chips = [];
-  D.orte.forEach(o => { for (let i = 0; i < D.exemplareProDing; i++) chips.push(`<div class="chip" style="--f:${o.farbe};--h:${tint(o.farbe, 0.15)}">${emoHtml(o.ding.emoji, 16)}<div class="n">${esc(o.ding.name)}</div></div>`); });
+  D.orte.forEach(o => { for (let i = 0; i < D.exemplareProDing; i++) chips.push(`<div class="chip" style="--f:${o.farbe};--h:${tint(o.farbe, 0.15)}">${emoHtml(o.ding.emoji, 13)}<div class="n">${esc(o.ding.name)}</div></div>`); });
   const anzahlDinge = chips.length;
   chips.push(`<div class="chip" style="--f:#c8102e;--h:#fff8e1">${sternfeldHtml(17)}<div class="n">Kalender</div></div>`);
   while (chips.length < cols * rows) chips.push(`<div class="chip" style="--f:#9e9e9e;--h:#fafafa"><div class="n" style="margin-top:17mm">Ersatz</div></div>`);
@@ -578,7 +578,7 @@ function figurPanel(fig, w, h) {
   }
   if (fig.stern) s += emoSvg('⭐', w - 5, 5, 7);
   if (!foto) s += emoSvg('❄️', 4.5, 4.5, 4);
-  const fs_ = fig.name.length > 6 ? 4.6 : 5.4;
+  const fs_ = fig.name.length > 6 ? 4.4 : 5.4;
   s += `<rect x="2.5" y="${h - 13}" width="${w - 5}" height="9" rx="2.5" fill="#fff"/>`;
   s += `<text x="${cx}" y="${h - 6.8}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="${fs_}" fill="${fig.farbe}">${esc(fig.name)}</text>`;
   return s;
@@ -891,13 +891,88 @@ function schachtelDatei(kontrolle) {
 }
 
 // ======================================================================
+// SPIELKARTEN für meinspiel.de (63 x 88 mm, je Karte 69 x 94 mm inkl. 3 mm Beschnitt)
+// 55 Karten: 40 Wichtel-Karten, 12 Einkaufslisten, 1 Titelkarte, 2 Kurzregeln
+// ======================================================================
+function meinspielKartenDateien() {
+  const SW = 69, SH = 94;
+  const css = KARTEN_CSS
+    .replace('@page{size:A4;margin:0}', `@page{size:${SW}mm ${SH}mm;margin:0}`)
+    .replace('.page{width:210mm;height:297mm}', `.page{width:${SW}mm;height:${SH}mm;background:#fff;position:relative;overflow:hidden}.page>.karte{position:absolute;left:3mm;top:3mm;outline:none}`) + `
+  .el{display:flex;flex-direction:column;align-items:center;width:100%}
+  .el .kopf{display:flex;align-items:center;gap:1.5mm;font-family:'DM Serif Display',serif;font-size:5.6mm;color:#c8102e;margin-top:0.5mm}
+  .el .nr{font-family:Fredoka;font-weight:600;font-size:2.6mm;color:#f0d48a;background:#1f6b4a;border-radius:1.5mm;padding:0.2mm 1.4mm}
+  .el .felder{display:grid;grid-template-columns:repeat(2,24.5mm);grid-template-rows:repeat(2,27.5mm);gap:2.2mm;margin-top:2.4mm}
+  .el .slot{border:0.5mm dashed var(--f);border-radius:2.5mm;background:#fffdf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5mm;padding-top:0.5mm}
+  .el .slot .n{font-family:Fredoka;font-weight:600;font-size:3.1mm;color:#333;line-height:1;margin-top:0.8mm}
+  .el .slot .o{font-size:2.3mm;font-weight:800;color:var(--f);display:flex;align-items:center;gap:0.5mm;line-height:1}
+  .el .tipp{margin-top:2.6mm;font-size:2.55mm;font-weight:800;color:#1f6b4a;text-align:center;line-height:1.25}
+  .tk{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+  .tk .susi{width:25mm;height:25mm;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 0.8mm #d4a537,0 0 0 1.6mm #fbf4e6,0 0 0 1.9mm #d4a537;margin-top:1mm}
+  .tk .t1{font-family:'DM Serif Display',serif;font-size:6mm;color:#c8102e;line-height:1;margin-top:2.6mm}
+  .tk .t1 i{color:#b8862b;font-size:5mm}
+  .tk .t2{font-family:'DM Serif Display',serif;font-size:6.4mm;color:#1f6b4a;line-height:1.05}
+  .tk .q{display:flex;align-items:center;gap:2.5mm;margin-top:2.4mm;text-align:left}
+  .tk .q b{font-family:'DM Serif Display',serif;font-weight:400;font-size:3.8mm;color:#c8102e;display:block}
+  .tk .q span{display:block;font-size:2.3mm;font-weight:700;color:#5a4d36;line-height:1.25}
+  .tk .q .qq{background:#fff;padding:1mm;border-radius:1mm;box-shadow:0 0 0 0.3mm #d4a537}
+  .kr h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:6mm;color:#1f6b4a;text-align:center;margin:0.5mm 0 2mm}
+  .kr ol{margin:0;padding-left:4.2mm;text-align:left}
+  .kr li{font-size:2.85mm;line-height:1.3;font-weight:700;color:#3a3226;margin-bottom:1.7mm}
+  .kr li::marker{color:#c8102e;font-weight:800}
+  .kr li b{color:#c8102e}
+  .rueck.liste .kreis{background:radial-gradient(circle at 45% 38%,#2e8a5f 0,#17573b 100%)}
+  .rueck.extra .kreis{background:radial-gradient(circle at 45% 38%,#e9c46a 0,#b8862b 100%)}`;
+  const bg = bildUri('hintergrund.jpg');
+  const rueck = (cls, inhalt, wort) => `<div class="karte"><div class="rueck ${cls}" style="${bg ? `background-image:url(${bg})` : 'background:#3a5a9a'}">
+      <div class="kreis">${inhalt}</div><div class="wort">${wort}</div><div class="klein">${esc(D.titel)}</div></div></div>`;
+  const rueckWichtel = kartenRueckseite();
+  const rueckListe = rueck('liste', emoHtml('🧺', 19), esc(D.listenName));
+  const rueckExtra = rueck('extra', `<div style="width:25mm;height:25mm;border-radius:50%;background:url(${bildUri('susi_mitte.jpg') || ''}) center/cover"></div>`, 'Spielhilfe');
+  const vorne = [], hinten = [];
+  // 1 Titelkarte
+  vorne.push(`<div class="karte" style="--f:#c8102e;--h:#fff6f2"><div class="innen"><div class="tk">
+      <div class="susi" style="background-image:url(${bildUri('susi_mitte.jpg') || ''})"></div>
+      <div class="t1">Susis <i>perfektes</i></div><div class="t2">Weihnachts&shy;dinner</div>
+      ${QR_SVG ? `<div class="q"><div class="qq">${qrHtml(13)}</div><div><b>Online spielen</b><span>QR-Code scannen und die digitale Version im Browser spielen.</span></div></div>` : ''}
+    </div><div class="fuss">${esc(D.untertitel)}</div></div></div>`);
+  hinten.push(rueckExtra);
+  // 2 Kurzregeln
+  const kurz = `<div class="karte" style="--f:#1f6b4a;--h:#eef6f0"><div class="innen kr">
+      <h3>So geht's</h3><ol>
+      <li>Alle ziehen eine <b>Einkaufsliste</b> und starten in Susis Küche.</li>
+      <li><b>Würfeln</b> und genau so viele Felder ziehen – die Richtung ist frei.</li>
+      <li><b>Genau</b> auf einem Ort landen: die Zutat von deiner Liste nehmen.</li>
+      <li><b>Sternfeld:</b> Wichtel-Karte ziehen, danach unter den Stapel legen.</li>
+      <li>Alle 4 Zutaten? <b>Genau</b> in die Küche ziehen – gewonnen!</li></ol>
+      <div class="fuss">${esc(D.titel)}</div></div></div>`;
+  for (let i = 0; i < 2; i++) { vorne.push(kurz); hinten.push(rueckExtra); }
+  // 12 Einkaufslisten
+  D.suchlisten.forEach((l, i) => {
+    vorne.push(`<div class="karte" style="--f:#c8102e;--h:#fff6f2"><div class="innen"><div class="el">
+      <div class="kopf">${stechpalmeHtml(6)}${esc(D.listenName)}<span class="nr">Nr. ${i + 1}</span></div>
+      <div class="felder">${l.map(id => { const o = ortById[id]; return `<div class="slot" style="--f:${o.farbe}">${emoHtml(o.ding.emoji, 11.5)}<div class="n">${esc(o.ding.name)}</div><div class="o">${emoHtml(o.emoji, 2.6)}${esc(o.name)}</div></div>`; }).join('')}</div>
+      <div class="tipp">Alles gefunden? Dann schnell zurück<br>zu Susi in die Küche!</div>
+    </div></div></div>`);
+    hinten.push(rueckListe);
+  });
+  // 40 Wichtel-Karten
+  D.jakobKarten.forEach(k => { for (let i = 0; i < k.anzahl; i++) { vorne.push(kartenVorderseite(k)); hinten.push(rueckWichtel); } });
+  const seiten = arr => arr.map(k => `<div class="page">${k}</div>`).join('');
+  return [
+    { name: '00_meinspiel_Karten_63x88_Vorderseiten', html: htmlDoc('Karten Vorderseiten', css, seiten(vorne)), karten: vorne.length },
+    { name: '00_meinspiel_Karten_63x88_Rueckseiten', html: htmlDoc('Karten Rückseiten', css, seiten(hinten)), karten: hinten.length },
+  ];
+}
+
+// ======================================================================
 let QR_SVG = '';
 const qrHtml = mm => `<div style="width:${mm}mm;height:${mm}mm">${QR_SVG.replace('<svg ', '<svg style="width:100%;height:100%;display:block" ')}</div>`;
 async function main() {
   QR_SVG = D.onlineLink ? await require('qrcode').toString(D.onlineLink, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#1f4d38', light: '#ffffff' } }) : '';
   assetsRegistrieren();
   const sl = suchlistenDatei();
-  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei(), schachtelDatei(false), schachtelDatei(true)];
+  const dateien = [...planDateien(), regelDatei(), kartenDatei(), sl, gegenstaendeDatei(sl.tint), figurenDatei(), deckelDatei(), schachtelDatei(false), schachtelDatei(true), ...meinspielKartenDateien()];
   const browser = await chromium.launch();
   const page = await browser.newPage();
   for (const d of dateien) {

@@ -52,11 +52,11 @@ const suchlisten = listenErzeugen();
 // Spielfiguren. Ein Foto kann als figuren/<id>.jpg oder .png abgelegt werden.
 // `stern: true` = Hauptfigur (bekommt einen goldenen Stern)
 const figuren = [
-  { id: 'mami',    name: 'Mami',    farbe: '#c62828', stern: true },
+  { id: 'mami',    name: 'Susi',    farbe: '#c62828', stern: true },
   { id: 'jakob',   name: 'Jakob',   farbe: '#ef6c00', kind: true },
-  { id: 'mama',    name: 'Mama',    farbe: '#c79100' },
-  { id: 'oma',     name: 'Oma',     farbe: '#2e7d32' },
-  { id: 'opa',     name: 'Opa',     farbe: '#00796b' },
+  { id: 'mama',    name: 'Martina', farbe: '#c79100' },
+  { id: 'oma',     name: 'Anni',    farbe: '#2e7d32' },
+  { id: 'opa',     name: 'Norbert', farbe: '#00796b' },
   { id: 'birgit',  name: 'Birgit',  farbe: '#1565c0' },
   { id: 'gerhard', name: 'Gerhard', farbe: '#4527a0' },
   { id: 'lukas',   name: 'Lukas',   farbe: '#ad1457' },

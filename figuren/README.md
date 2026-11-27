@@ -6,10 +6,10 @@ Der Dateiname muss genau so heißen:
 | Figur   | Datei                         |
 |---------|-------------------------------|
 | Jakob   | `jakob.jpg`                   |
-| Mama    | `mama.jpg`                    |
-| Mami    | `mami.jpg`                    |
-| Oma     | `oma.jpg`                     |
-| Opa     | `opa.jpg`                     |
+| Martina | `mama.jpg`                    |
+| Susi    | `mami.jpg`                    |
+| Anni    | `oma.jpg`                     |
+| Norbert | `opa.jpg`                     |
 | Birgit  | `birgit.jpg`                  |
 | Gerhard | `gerhard.jpg`                 |
 | Lukas   | `lukas.jpg`                   |

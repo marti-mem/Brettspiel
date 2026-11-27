@@ -40,6 +40,21 @@ Nach dem [Gestaltungsleitfaden Stülpdeckelschachtel 308 × 217 × 35 mm](https:
 `00_meinspiel_Schachtel_KONTROLLANSICHT_nicht_drucken.png` zeigt Stanzlinie (pink) und Falz (grün) – **nicht** hochladen.
 Pflichtangaben (CE, Warnhinweis, Hersteller) sind nicht enthalten – für ein privates Geschenk per E-Mail an meinspiel.de darauf verzichten (siehe oben).
 
+## Spielkarten für meinspiel.de (100 % individuelle Karten, 63 × 88 mm)
+
+Nach dem [Gestaltungsleitfaden 63 × 88 mm](https://www.meinspiel.de/gestaltungsleitfaden-spielkarten-format-63x88-mm/) – Variante mit **55 Karten**:
+
+| Karten | Anzahl | Rückseite |
+|---|---|---|
+| Titelkarte (Susi, Titel, QR-Code) | 1 | „Spielhilfe“ |
+| Kurzregel „So geht's“ | 2 | „Spielhilfe“ |
+| Einkaufslisten Nr. 1–12 | 12 | „Einkaufsliste“ (grün) |
+| Wichtel-Karten | 40 | „Wichtel-Karte“ (rot) |
+
+- `00_meinspiel_Karten_63x88_Vorderseiten.pdf` und `…_Rueckseiten.pdf`: je 55 Seiten à 69 × 94 mm (Karte + 3 mm Beschnitt), Seite *n* vorne gehört zu Seite *n* hinten.
+- Für den Upload im Konfigurator besser die Einzelbilder verwenden (in der ZIP-Datei: 55 + 55 PNG, je 815 × 1110 px, 300 dpi, sRGB).
+- Wichtige Inhalte liegen mind. 4 mm innerhalb der Kartenkante; Ecken werden mit 5 mm Radius gestanzt.
+
 ## Druckvorlagen (Ordner `druck/`)
 
 | Datei | Inhalt | Druck |
@@ -51,7 +66,7 @@ Pflichtangaben (CE, Warnhinweis, Hersteller) sind nicht enthalten – für ein p
 | `03_Wichtel-Karten_A4_beidseitig.pdf` | 40 Wichtel-Karten, mit Rückseiten (5 Bögen) | Beidseitig, Karton 250–300 g/m², an der langen Kante wenden |
 | `04_Einkaufslisten_A4.pdf` | 12 Einkaufslisten (9,5 × 9,5 cm) | Nur Vorderseite, Karton |
 | `05_Gegenstaende_A4.pdf` | 48 Gegenstand-Plättchen (3 × 3 cm), 1 Kalender-Stern und 5 leere Ersatz-Plättchen | Nur Vorderseite, Karton |
-| `06_Spielfiguren_A4.pdf` | 10 Falt-Figuren mit Weihnachtsmütze (Mami/Susi mit Stern) | Nur Vorderseite, Karton 200–250 g/m² |
+| `06_Spielfiguren_A4.pdf` | 10 Falt-Figuren mit Weihnachtsmütze (Susi mit Stern) | Nur Vorderseite, Karton 200–250 g/m² |
 | `07_Schachteldeckel_A4.pdf` | Titelbild zum Aufkleben auf eine Schachtel | Fotopapier oder Karton |
 
 Wichtig: Immer in **Originalgröße (100 %)** drucken, also nicht „An Seite anpassen“ wählen.
